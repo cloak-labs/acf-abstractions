@@ -1,0 +1,26 @@
+{
+  "name": "cloakwp/acf-abstractions",
+  "description": "A set of OOP abstractions around ACF to improve developer experience.",
+  "version": "0.0.1",
+  "license": "LGPL-3.0-only",
+  "require": {
+    "composer/installers": "^2.2",
+    "cloakwp/core": "^0.0.1",
+    "vinkla/extended-acf": "dev-master || dev-main"
+  },
+  "autoload": {
+    "psr-4": {
+      "CloakWP\\ACF\\": "src"
+    }
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true,
+    "allow-plugins": {
+      "composer/installers": true
+    }
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}
