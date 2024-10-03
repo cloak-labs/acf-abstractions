@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f24c34854243d7014065e12bfa4ed492",
+    "content-hash": "dd2fc7d327274d57ddb60887ed410166",
     "packages": [
         {
             "name": "cloakwp/core",
-            "version": "0.0.1",
+            "version": "0.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cloak-labs/cloakwp-core.git",
-                "reference": "6dfdb110e42bd28c505ffab2f6cc3cc01ddc9f2a"
+                "reference": "48df417e557be8394b42acd653f5803d5697348b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cloak-labs/cloakwp-core/zipball/6dfdb110e42bd28c505ffab2f6cc3cc01ddc9f2a",
-                "reference": "6dfdb110e42bd28c505ffab2f6cc3cc01ddc9f2a",
+                "url": "https://api.github.com/repos/cloak-labs/cloakwp-core/zipball/48df417e557be8394b42acd653f5803d5697348b",
+                "reference": "48df417e557be8394b42acd653f5803d5697348b",
                 "shasum": ""
             },
             "require": {
@@ -38,9 +38,9 @@
             "description": "A set of OOP abstractions around WordPress core to improve developer experience.",
             "support": {
                 "issues": "https://github.com/cloak-labs/cloakwp-core/issues",
-                "source": "https://github.com/cloak-labs/cloakwp-core/tree/v0.0.1"
+                "source": "https://github.com/cloak-labs/cloakwp-core/tree/v0.0.3"
             },
-            "time": "2024-09-09T22:33:19+00:00"
+            "time": "2024-10-02T23:27:40+00:00"
         },
         {
             "name": "composer/installers",
@@ -359,12 +359,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/vinkla/extended-acf.git",
-                "reference": "62845d151d9c43cb035235df5d9a64cfe015ea7f"
+                "reference": "41631aebf6bec30f34d459b55204958ee2a7d9a9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vinkla/extended-acf/zipball/62845d151d9c43cb035235df5d9a64cfe015ea7f",
-                "reference": "62845d151d9c43cb035235df5d9a64cfe015ea7f",
+                "url": "https://api.github.com/repos/vinkla/extended-acf/zipball/41631aebf6bec30f34d459b55204958ee2a7d9a9",
+                "reference": "41631aebf6bec30f34d459b55204958ee2a7d9a9",
                 "shasum": ""
             },
             "require": {
@@ -415,7 +415,7 @@
                 "issues": "https://github.com/vinkla/extended-acf/issues",
                 "source": "https://github.com/vinkla/extended-acf/tree/master"
             },
-            "time": "2024-07-09T09:14:09+00:00"
+            "time": "2024-09-12T09:01:33+00:00"
         }
     ],
     "packages-dev": [],
