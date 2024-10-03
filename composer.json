@@ -5,7 +5,7 @@
   "license": "LGPL-3.0-only",
   "require": {
     "composer/installers": "^2.2",
-    "cloakwp/core": "^0.0.1",
+    "cloakwp/core": "^0.0",
     "vinkla/extended-acf": "dev-master || dev-main"
   },
   "autoload": {
