@@ -21,6 +21,7 @@ class Block
   protected bool $collapsible = true;
   public string $emptyFieldsMessage = '';
   protected bool $isRegistered = false;
+  protected bool $useUIFields = false;
 
   /**
    * @var callable|null $filterValueCallback
@@ -38,7 +39,7 @@ class Block
       $parsed = json_decode($blockJsonContent, true);
       if ($parsed !== null) {
         $name = $parsed['name'];
-        // ensure block name is prefixed with "acf/" if it doesn't have a prefix (fixes bug related to Block->apiResponse filter):
+        // ensure block name is prefixed with "acf/" if it doesn't have a prefix (fixes bug related to Block->value filter):
         if ($name && !str_contains($name, '/'))
           $parsed['name'] = 'acf/' . $name;
 
@@ -119,6 +120,17 @@ class Block
   }
 
   /**
+   * When called, indicates that this block's fields will be managed through the ACF UI
+   * rather than programmatically registered. This ensures we don't call register_extended_field_group()
+   * when using the ACF UI to manage fields.
+   */
+  public function fieldsViaUI(): static
+  {
+    $this->useUIFields = true;
+    return $this;
+  }
+
+  /**
    * Registers the ACF Block with WP, registers it with the global BlockRegistry singleton, registers its ACF Field Group, and optionally adds a REST API 
    * response filter if previously set via `apiResponse` method.
    * 
@@ -137,14 +149,16 @@ class Block
         $this->args
       );
 
-      $fieldGroupSettings = $this->getFieldGroupSettings();
       $block = $this;
       BlockRegistry::getInstance()->addBlock($block);
 
-      // register block's ACF Field Group (using Extended ACF package)
-      add_action('acf/init', function () use ($fieldGroupSettings) {
-        register_extended_field_group($fieldGroupSettings);
-      });
+      // Only register field group if not using UI fields
+      if (!$this->useUIFields) {
+        $fieldGroupSettings = $this->getFieldGroupSettings();
+        add_action('acf/init', function () use ($fieldGroupSettings) {
+          register_extended_field_group($fieldGroupSettings);
+        });
+      }
 
       // optionally filter this block's REST API responses with user-provided callback:
       if ($this->filterValueCallback) {
