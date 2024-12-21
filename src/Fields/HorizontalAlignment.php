@@ -6,9 +6,9 @@ use Extended\ACF\Fields\ButtonGroup;
 use InvalidArgumentException;
 
 /**
- * An auto-populated ACF Button Group field that allows you to select an alignment (left, center, right, justify), with icon indicators.
+ * An auto-populated ACF Button Group field that allows you to select a horizontal alignment (left, center, right, justify), with icon indicators.
  */
-class Alignment extends ButtonGroup
+class HorizontalAlignment extends ButtonGroup
 {
   protected array $enabledChoices;
 
