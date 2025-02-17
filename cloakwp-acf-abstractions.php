@@ -1,5 +1,8 @@
 <?php
 
+use CloakWP\Core\Enqueue\Script;
+use CloakWP\Core\Enqueue\Stylesheet;
+
 /**
  * The plugin bootstrap file
  *
@@ -28,3 +31,22 @@
 if (!defined('WPINC')) {
   die;
 }
+
+Stylesheet::make("cloakwp_acf_block_styles")
+  ->hook("enqueue_block_editor_assets")
+  ->src(plugin_dir_url(__FILE__) . '/css/acf-block.css')
+  ->version(\WP_ENV === "development" ? filemtime(plugin_dir_path(__FILE__) . '/css/acf-block.css') : '0.0.1')
+  ->enqueue();
+
+Stylesheet::make("cloakwp_acf_tooltip_styles")
+  ->hook("enqueue_block_editor_assets")
+  ->src(plugin_dir_url(__FILE__) . '/css/acf-tooltip.css')
+  ->version(\WP_ENV === "development" ? filemtime(plugin_dir_path(__FILE__) . '/css/acf-tooltip.css') : '0.0.1')
+  ->enqueue();
+
+Script::make("cloakwp_acf_tooltip_script")
+  ->hook("enqueue_block_editor_assets")
+  ->src(plugin_dir_url(__FILE__) . '/js/acf-tooltip.js')
+  ->deps(["jquery"])
+  ->version(\WP_ENV === "development" ? filemtime(plugin_dir_path(__FILE__) . '/js/acf-tooltip.js') : '0.0.1')
+  ->enqueue();
