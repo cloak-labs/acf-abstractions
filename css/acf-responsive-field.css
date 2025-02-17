@@ -1,0 +1,47 @@
+.acf-responsive-field {
+  .acf-tab-wrap {
+    overflow: hidden;
+
+    .acf-tab-group li {
+      margin: 0 2px 0 0;
+
+      .acf-tab-button {
+        padding: 5px 2px;
+        border-top-right-radius: 4px;
+        border-top-left-radius: 4px;
+
+        svg {
+          width: 20px;
+          height: 20px;
+          stroke: black;
+
+          &.wider {
+            width: 22px;
+          }
+        }
+      }
+
+      &.active {
+        .acf-tab-button svg {
+          stroke: var(--cloakwp-acf-ui-accent-color);
+        }
+      }
+    }
+  }
+
+  &.acf-field-group {
+    padding: 0px !important;
+
+    & > .acf-label {
+      display: none;
+    }
+
+    & > .acf-input {
+      & .acf-fields.-border {
+        border: 0px !important;
+        box-shadow: none !important;
+        border-radius: 0px !important;
+      }
+    }
+  }
+}
