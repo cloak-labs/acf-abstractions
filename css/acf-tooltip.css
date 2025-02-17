@@ -1,0 +1,90 @@
+/* ==========================================================================
+   Creates the "info" icon, 
+   styles the instruction text as a tooltip, and 
+   creates the hover functionality for showing the tooltip.
+   ========================================================================== */
+
+.acf-repeater .acf-th.cloakwp-acf-tooltip:after,
+.acf-field .acf-label.cloakwp-acf-tooltip label:after {
+  content: "\f348";
+  color: var(--acf-tooltip-icon-color, #777683);
+  display: block;
+  float: right;
+  width: 14px;
+  height: 14px;
+  font-size: 14px;
+  margin: 0 4px;
+  line-height: 1;
+  font-family: dashicons;
+  text-decoration: inherit;
+  font-weight: 400;
+  font-style: normal;
+  text-align: center;
+  transition: color 0.1s ease-in 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.acf-repeater .acf-th.cloakwp-acf-tooltip:hover:after,
+.acf-field .acf-label.cloakwp-acf-tooltip label:hover:after {
+  color: var(
+    --acf-tooltip-icon-color-hover,
+    var(--wp-admin-theme-color, #3858e9)
+  );
+}
+
+.acf-repeater .acf-th.cloakwp-acf-tooltip:hover,
+.acf-field .acf-label.cloakwp-acf-tooltip label:hover {
+  cursor: context-menu;
+}
+
+.acf-repeater .acf-th.cloakwp-acf-tooltip:hover p.description,
+.acf-field .acf-label.cloakwp-acf-tooltip label:hover + p.description,
+.acf-repeater .acf-th.cloakwp-acf-tooltip p.description:hover,
+.acf-field .acf-label.cloakwp-acf-tooltip label + p.description:hover {
+  font-size: 12px;
+  cursor: context-menu;
+  position: absolute;
+  left: 0;
+  top: 16px;
+  z-index: 1000;
+  background: var(--wp-components-color-foreground, #1e1e1e);
+  color: var(--wp-components-color-foreground-inverted, #fff);
+  opacity: 0.9;
+  backdrop-filter: blur(10px);
+  padding: 4px 6px;
+  min-width: 200px;
+  border-radius: 5px;
+  box-shadow: 0 0 3px 0 rgba(0, 0, 0, 0.1);
+}
+
+.acf-repeater .acf-th.cloakwp-acf-tooltip:not(:hover) p.description br,
+.acf-field .acf-label.cloakwp-acf-tooltip label:not(:hover) + p.description br {
+  display: none; /* hide the br elements when not showing tooltip */
+}
+
+.acf-repeater .acf-th.cloakwp-acf-tooltip p.description:hover br,
+.acf-field .acf-label.cloakwp-acf-tooltip label + p.description:hover br {
+  display: block; /* show the br elements when showing tooltip */
+}
+
+.acf-repeater .acf-th p.description,
+.acf-field .acf-label p.description {
+  font-size: 0px;
+  display: inline;
+  line-height: 1.4em;
+  font-style: normal; /* override the default style to italicize */
+}
+
+.acf-field > .acf-label:after {
+  content: "";
+  clear: both;
+  display: table;
+  overflow: auto;
+}
+
+.acf-field > .acf-label > label[for] {
+  margin-bottom: 0;
+  display: inline-block;
+  float: left;
+}
