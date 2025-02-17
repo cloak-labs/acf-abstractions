@@ -35,7 +35,7 @@ abstract class ConfigurableGroupPreset extends Group
 
   /**
    * @internal
-   * @deprecated This method is for internal use only. Do not call directly, as this defeats the purpose of the "ConfigurableGroupPreset"class. Use the "addField" method instead.
+   * @deprecated This method is for internal use only. Do not call directly, as this defeats the purpose of the "ConfigurableGroupPreset" class. Use the "addField" method instead.
    * @param array<Field> $fields
    */
   public function fields(array $fields): static
@@ -80,7 +80,7 @@ abstract class ConfigurableGroupPreset extends Group
       'relativeTo' => $relativeTo
     ];
 
-    $this->fields($this->getFields()); // Using fields instead of fields
+    $this->fields($this->getFields());
     return $this;
   }
 

@@ -11,12 +11,12 @@ use Extended\ACF\Fields\RadioButton;
  */
 class ThemeColorPicker extends RadioButton
 {
-  private static $cssAdded = false;
+  private static $hasEnqueuedDependencies = false;
 
   // we override inherited `make` in order to set default colors when include() isn't called/specified
   public static function make(string $label, string|null $name = null): static
   {
-    if (!self::$cssAdded) {
+    if (!self::$hasEnqueuedDependencies) {
       // add required CSS styles for the color picker, but only ONCE (no matter how many ThemeColorPicker fields are created)
       add_action('admin_head', function () {
         $themeColorPickerCSS = '';
@@ -30,11 +30,11 @@ class ThemeColorPicker extends RadioButton
       });
 
       Stylesheet::make("cloakwp_theme_color_picker_styles")
-        ->src(dirname(plugin_dir_url(__FILE__)) . '/css/theme-color-picker.css')
-        ->version(\WP_ENV != "production" ? uniqid() : '0.0.1')
+        ->src(dirname(plugin_dir_url(__FILE__)) . '/css/acf-theme-color-picker.css')
+        ->version(\WP_ENV === "development" ? filemtime(dirname(plugin_dir_path(__FILE__), 2) . '/css/acf-theme-color-picker.css') : '0.0.1')
         ->enqueue();
 
-      self::$cssAdded = true;
+      self::$hasEnqueuedDependencies = true;
     }
 
     $self = new static($label, $name);

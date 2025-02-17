@@ -1,9 +1,8 @@
 /**
- * All of the CSS for your admin-specific functionality should be
- * included in this file.
+ * All of the CSS for your admin-specific functionality should be included in this file.
  */
 
- .cloakwp-theme-color-picker .acf-radio-list {
+.cloakwp-theme-color-picker .acf-radio-list {
   display: flex;
   flex-wrap: wrap;
   padding-left: 0;
