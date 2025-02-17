@@ -3,6 +3,7 @@
   "description": "A set of OOP abstractions around ACF to improve developer experience.",
   "version": "0.0.4",
   "license": "LGPL-3.0-only",
+  "type": "wordpress-plugin",
   "require": {
     "composer/installers": "^2.2",
     "cloakwp/core": "^0.0",
