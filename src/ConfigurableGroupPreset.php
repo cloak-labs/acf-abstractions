@@ -35,7 +35,7 @@ abstract class ConfigurableGroupPreset extends Group
 
   /**
    * @internal
-   * @deprecated This method is for internal use only. Do not call directly, as this defeats the purpose of the "ConfigurableGroupPreset" class. Use the "addField" method instead.
+   * @deprecated This method is for internal use only (marked as deprecated to discourage use). Do not call directly, as this defeats the purpose of the "ConfigurableGroupPreset" class. Use the "addField" method instead.
    * @param array<Field> $fields
    */
   public function fields(array $fields): static
