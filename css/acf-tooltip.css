@@ -7,20 +7,20 @@
 .acf-repeater .acf-th.cloakwp-acf-tooltip:after,
 .acf-field .acf-label.cloakwp-acf-tooltip label:after {
   content: "\f348";
-  color: var(--acf-tooltip-icon-color, #777683);
+  color: var(--acf-tooltip-icon-color, #b2b2c5);
   display: block;
   float: right;
-  width: 14px;
-  height: 14px;
-  font-size: 14px;
-  margin: 0 4px;
+  width: 12px;
+  height: 12px;
+  font-size: 12px;
+  margin: 1px 3px;
   line-height: 1;
   font-family: dashicons;
   text-decoration: inherit;
   font-weight: 400;
   font-style: normal;
   text-align: center;
-  transition: color 0.1s ease-in 0;
+  transition: color 0.1s ease-in;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
