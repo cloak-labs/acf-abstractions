@@ -3,8 +3,8 @@
 namespace CloakWP\ACF\Fields;
 
 use CloakWP\Core\Enqueue\Stylesheet;
-use CloakWP\Core\Utils;
 use Extended\ACF\Fields\RadioButton;
+use WP_Theme_JSON_Resolver;
 
 /**
  * An auto-populated ACF Radio Button field that allows you to select a color from the active theme's theme.json color palette.
@@ -18,11 +18,11 @@ class ThemeColorPicker extends RadioButton
   {
     if (!self::$hasEnqueuedDependencies) {
       // add required CSS styles for the color picker, but only ONCE (no matter how many ThemeColorPicker fields are created)
-      add_action('admin_head', function () {
+      $palette = self::getThemeColorPalette();
+      add_action('admin_head', function () use ($palette) {
         $themeColorPickerCSS = '';
-        $color_palette = Utils::get_theme_color_palette();
-        if (!empty($color_palette)) {
-          foreach ($color_palette as $color) {
+        if (!empty($palette)) {
+          foreach ($palette as $color) {
             $themeColorPickerCSS .= ".cloakwp-theme-color-picker .acf-radio-list li label input[type='radio'][value='{$color['slug']}'] { background-color: var(--wp--preset--color--{$color['slug']}); }";
           }
         }
@@ -30,6 +30,7 @@ class ThemeColorPicker extends RadioButton
       });
 
       Stylesheet::make("cloakwp_theme_color_picker_styles")
+        ->hooks(["admin_enqueue_scripts"])
         ->src(dirname(plugin_dir_url(__FILE__)) . '/css/acf-theme-color-picker.css')
         ->version(\WP_ENV === "development" ? filemtime(dirname(plugin_dir_path(__FILE__), 2) . '/css/acf-theme-color-picker.css') : '0.0.1')
         ->enqueue();
@@ -58,7 +59,7 @@ class ThemeColorPicker extends RadioButton
 
   private function filterColors(array $filterColors = [], bool $exclude = false): array
   {
-    $color_palette = Utils::get_theme_color_palette();
+    $color_palette = self::getThemeColorPalette();
     $final_colors = [];
 
     // if there are colors in the $color_palette array
@@ -83,5 +84,23 @@ class ThemeColorPicker extends RadioButton
   {
     $this->settings['choices'] = $final_colors;
     $this->settings['wrapper']['class'] = 'cloakwp-theme-color-picker';
+  }
+
+  private static function getThemeColorPalette(): array
+  {
+    $palette = [];
+
+    // check if theme.json is being used and if so, grab the settings
+    if (class_exists('WP_Theme_JSON_Resolver')) {
+      $settings = WP_Theme_JSON_Resolver::get_theme_data()->get_settings();
+
+      if (isset($settings['color']['palette']['theme'])) {
+        $palette = $settings['color']['palette']['theme'];
+      }
+    } else {
+      throw new \Exception('Theme.json is not being used, and is required for the ThemeColorPicker field to work. Please enable the theme.json feature in your theme.');
+    }
+
+    return $palette;
   }
 }
