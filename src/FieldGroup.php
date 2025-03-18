@@ -12,6 +12,7 @@ namespace CloakWP\ACF;
 class FieldGroup
 {
   protected array $settings;
+  protected array $resolvedSettings;
 
   public function __construct(string $label)
   {
@@ -32,6 +33,11 @@ class FieldGroup
   {
     $this->settings['fields'] = $fields;
     return $this;
+  }
+
+  public function getFields(): array
+  {
+    return $this->settings['fields'];
   }
 
   public function location(array $locations): static
@@ -137,7 +143,17 @@ class FieldGroup
   public function register()
   {
     add_action('acf/init', function () {
-      register_extended_field_group($this->settings);
+      $this->get();
     });
+  }
+
+  public function get(): array
+  {
+    if (isset($this->resolvedSettings)) {
+      return $this->resolvedSettings;
+    }
+
+    $this->resolvedSettings = register_extended_field_group($this->settings);
+    return $this->resolvedSettings;
   }
 }
