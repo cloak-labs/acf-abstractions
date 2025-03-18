@@ -30,8 +30,8 @@ class BlockRegistry
 
   public function addBlock(Block $block): static
   {
-    // By using deep_copy here, we're saving the *original* Block class instances in the BlockRegistry, therefore any subsequent changes to those Class instances won't affect the versions saved in the BlockRegistry
-    $this->blocks[] = Utils::deep_copy($block);
+    // By using deepCopy here, we're saving the *original* Block class instances in the BlockRegistry, therefore any subsequent changes to those Class instances won't affect the versions saved in the BlockRegistry
+    $this->blocks[] = Utils::deepCopy($block);
 
     return $this;
   }
@@ -43,6 +43,6 @@ class BlockRegistry
    */
   public function getBlocks(): array
   {
-    return Utils::deep_copy($this->blocks);
+    return Utils::deepCopy($this->blocks);
   }
 }

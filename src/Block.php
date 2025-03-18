@@ -141,7 +141,7 @@ class Block
     $name = $this->parsedBlockJson['name'];
 
     if ($this->isRegistered) {
-      Utils::write_log("Warning: trying to register the Block '$name' after it has already been registered.");
+      Utils::log("Warning: trying to register the Block '$name' after it has already been registered.");
     } else {
       // register block with WP
       register_block_type(
@@ -160,7 +160,7 @@ class Block
         });
       }
 
-      // optionally filter this block's REST API responses with user-provided callback:
+      // optionally filter this block's BlockParser JSON output (affects REST API, Iframe previews, etc.) with user-provided callback:
       if ($this->filterValueCallback) {
         add_filter("cloakwp/block/name=$name", $this->filterValueCallback, 10, 2);
       }
@@ -221,9 +221,20 @@ class Block
       $this->fieldGroupSettings['fields'] = $this->fields;
     }
 
-    // this 'key' gets used in the 'InnerBlocks' field class to prevent a block from being nested within itself 
+    /**
+     * This 'key' gets used in the 'InnerBlocks' field class to prevent a block from being nested within itself 
+     * TODO: we shouldn't use the block.json "title" property to generate the key, as it may change and 
+     *      cause lost data. Need to use the "name" property, after the "/" part (eg. acf/cta -> cta), 
+     *      as users are unlikely to change this as it would break existing usage of blocks. Need to be
+     *      careful with this change, as it could cause lost data on our existing sites.
+     */
     $this->fieldGroupSettings['key'] = Key::sanitize('block_' . $title);
 
     return $this->fieldGroupSettings;
+  }
+
+  public function getFields(): array
+  {
+    return $this->fields;
   }
 }
