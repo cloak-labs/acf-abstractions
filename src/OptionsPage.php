@@ -39,6 +39,11 @@ class OptionsPage
     return $this;
   }
 
+  public function getFieldGroups(): array
+  {
+    return $this->fieldGroups;
+  }
+
 
   /**
    * Controls the WordPress capability a site user must possess to view the Options Page.
@@ -119,8 +124,6 @@ class OptionsPage
   }
 
   /**
-   * Set a custom description for this Options Page
-   * 
    * @see Read more about the available post_id values: https://www.advancedcustomfields.com/resources/get_field/
    * @param int|string $postId Can be set to a numeric post ID (123), or a string ("user_2"). Defaults to "options"
    */
@@ -171,7 +174,7 @@ class OptionsPage
     return $this;
   }
 
-  public function register()
+  public function register(): static
   {
     if (!isset($this->settings['menu_slug'])) {
       $this->settings['menu_slug'] = sanitize_title($this->settings['menu_title'] ?? $this->settings['page_title']);
@@ -196,5 +199,7 @@ class OptionsPage
           ->register();
       }
     }
+
+    return $this;
   }
 }
