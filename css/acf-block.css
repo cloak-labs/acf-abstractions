@@ -1,14 +1,18 @@
 /* Improve ACF Block fields' UI/UX in Block Editor sidebar 
 ==========================================================*/
 .block-editor {
-  --cloakwp-acf-ui-accent-color: var(
-    --wp-components-color-accent,
-    var(--wp-admin-theme-color, #3858e9)
-  );
+  --acf-spacing: 16px;
+  --acf-block-field-px: var(--acf-spacing);
+  --acf-block-field-py: var(--acf-spacing);
 
   .acf-block-fields.acf-fields {
     max-width: var(--cntr-w-wide);
     margin: auto;
+  }
+
+  /* Fix horizontal padding of meta box title (it's off by default) */
+  .edit-post-meta-boxes-area #poststuff h2.hndle {
+    padding: 0 24px 0 var(--acf-block-field-px);
   }
 
   .interface-interface-skeleton__sidebar .acf-field {
@@ -18,8 +22,12 @@
 
   .acf-fields {
     > .acf-field {
-      /* Decrease horizontal margin around fields to improve squished UI */
-      /* margin: 16px 10px !important; */
+      padding: var(--acf-block-field-py) var(--acf-block-field-px);
+
+      /* Unset dim-bg for blocks */
+      &.dim-bg > .acf-input > .acf-fields {
+        background: transparent;
+      }
 
       /* Improve label + description visual hierarchy/spacing */
       .acf-label {
@@ -58,6 +66,11 @@
       }
 
       &.acf-field-repeater {
+        /* Add back padding to label to ensure it's aligned with other fields */
+        > .acf-label {
+          padding: 0px var(--acf-block-field-px);
+        }
+
         .acf-row {
           td {
             border-top-color: #1e1e1e !important;
@@ -65,50 +78,58 @@
 
           /* Decrease width of repeater table handles to create more space for inner fields */
           .acf-row-handle {
-            padding: 8px 3px;
+            padding: 8px 1px;
           }
         }
 
-        .acf-repeater.-empty table.acf-table {
-          display: block;
-          height: 36px;
-          border-style: dashed;
-          border-color: gray;
-          border-radius: 2px;
-
-          &::before {
-            content: "No items";
-            width: fit-content;
-            margin: 0 auto;
-            display: flex;
-            height: 100%;
-            align-items: center;
-            font-style: italic;
+        .acf-repeater {
+          /* Reduce horizontal padding to create more space for inner fields */
+          > table > tbody > tr.acf-row > .acf-fields > .acf-field {
+            padding: 16px 8px;
           }
         }
       }
 
-      /* For Repeaters, remove outer horizontal margin to create more space for inner fields */
+      /* Sub-field styling for Repeaters & Groups */
       &.acf-field-repeater,
-      &.acf-field-group {
-        margin: 16px 0px !important;
+      &.acf-field-group:not(.invisible) {
+        /* Reduce horizontal padding to create more space for inner fields */
+        --acf-block-field-px: 10px;
+
+        /* Remove outer margin to create more space for inner fields */
+        margin: var(--acf-block-field-py) 0px;
       }
 
-      /* &.acf-field-group {
-        margin: 0px !important;
-      } */
       &.acf-field-group {
+        &.invisible {
+          margin: 0px;
+          padding: 0px;
+
+          > .acf-input > .acf-fields.-border {
+            border: none;
+          }
+
+          > .acf-input > .acf-fields {
+            /* Nested groups in invisible groups have max-width that mimics horizontal padding */
+            > .acf-field-group {
+              width: calc(100% - 10px) !important;
+              min-width: unset !important;
+              margin: 5px auto;
+            }
+          }
+        }
+
+        /* Nested groups have less vertical margin */
         .acf-field-group {
-          margin: 5px 0px !important;
+          margin: 5px 0px;
         }
       }
 
-      &.acf-field-group:not(.acf-responsive-field) {
+      &.acf-field-group:not(.acf-responsive-field):not(.invisible) {
         padding: 6px 5px;
-        background: rgb(243, 246, 249);
-        border-radius: 6px;
-        border-top: 1px solid rgba(0, 0, 0, 0.15);
-        border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+        background: rgb(237, 239, 242);
+        border-radius: var(--cloakwp-acf-ui-group-border-radius);
+        border: 1px solid rgba(0, 0, 0, 0.15);
 
         &:focus-within {
           border-color: var(--cloakwp-acf-ui-accent-color);
@@ -122,35 +143,62 @@
 
         /* Make borders around groups a bit more visually distinct from other bordered things */
         > .acf-input {
-          .acf-fields.-border {
+          > .acf-fields {
             border-color: rgba(0, 0, 0, 0.15);
             border-style: solid;
             border-width: 1px;
-            border-radius: 6px;
+            border-radius: var(--cloakwp-acf-ui-group-border-radius);
             box-shadow: 0px 1px 3px -1px rgba(16, 24, 40, 0.1);
-            overflow: hidden;
+
+            > .acf-field:last-child {
+              border-bottom-left-radius: var(
+                --cloakwp-acf-ui-group-border-radius
+              );
+              border-bottom-right-radius: var(
+                --cloakwp-acf-ui-group-border-radius
+              );
+            }
           }
         }
       }
 
       /* Subtle improvements to accordion field styling */
       &.acf-field-accordion {
-        margin: 0 !important;
+        /* margin: 0 !important; */
 
         > .acf-label {
           margin-bottom: 0px !important;
         }
 
-        &.-open .acf-accordion-title {
-          border-bottom: 1px solid #e0e0e0;
+        &.-open {
+          > .acf-accordion-title {
+            border-bottom: 1px solid #e0e0e0;
 
-          .acf-accordion-icon {
-            fill: var(--cloakwp-acf-ui-accent-color);
+            .acf-accordion-icon {
+              fill: var(--cloakwp-acf-ui-accent-color);
+            }
+          }
+
+          > .acf-accordion-content {
+            display: flex !important;
+            flex-direction: column;
           }
         }
 
-        .acf-accordion-content > .acf-fields:first-child {
-          border-top: 0px !important;
+        .acf-accordion-title {
+          padding-left: var(--acf-block-field-px);
+
+          label {
+            font-weight: 600;
+          }
+        }
+
+        .acf-accordion-content {
+          background: #fafafa;
+
+          > .acf-fields:first-child {
+            border-top: 0px !important;
+          }
         }
       }
 
@@ -161,6 +209,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
+            padding: 5px 9px;
 
             svg {
               width: 20px;
@@ -191,6 +241,20 @@
         }
       }
 
+      /* Radio or checkbox fields */
+      &.acf-field-radio,
+      &.acf-field-checkbox {
+        > .acf-input {
+          > ul.acf-hl li:not(:last-child) {
+            margin-right: var(--acf-spacing);
+          }
+
+          > ul.acf-hl li:last-child {
+            margin-right: 0px;
+          }
+        }
+      }
+
       &.acf-field-radio {
         .acf-input {
           .acf-radio-list {
@@ -202,6 +266,91 @@
 
               &:checked:before {
                 background: var(--cloakwp-acf-ui-accent-color);
+              }
+            }
+          }
+        }
+      }
+
+      &.acf-field-true-false {
+        .acf-input .acf-switch {
+          &.-on {
+            background-color: var(--cloakwp-acf-ui-accent-color);
+            border-color: var(--cloakwp-acf-ui-accent-color);
+          }
+
+          .acf-switch-slider {
+            border-color: var(--cloakwp-acf-ui-accent-color);
+          }
+        }
+      }
+
+      /* Fix Image Gallery field responsiveness in Block Editor sidebar */
+      &.acf-field-gallery {
+        --acf-block-field-px: 0px;
+        /* padding: 16px 0px; */
+
+        > .acf-label {
+          padding: 0px 16px;
+        }
+
+        > .acf-input {
+          padding: 0px 5px;
+
+          > .acf-gallery {
+            .acf-gallery-main {
+              .acf-gallery-attachments {
+                scrollbar-width: thin;
+              }
+
+              .acf-gallery-toolbar {
+                .acf-hl {
+                  display: flex;
+                  column-gap: 6px;
+                  align-items: center;
+                  justify-content: center;
+
+                  > li.acf-gallery-add {
+                    margin-right: 4px;
+                  }
+
+                  > .acf-fr {
+                    .acf-gallery-sort {
+                      width: 125px;
+                    }
+                  }
+                }
+              }
+            }
+
+            .acf-gallery-side {
+              width: var(--acf-block-gallery-max-width, 0px) !important;
+              z-index: 2;
+
+              .acf-gallery-side-inner {
+                width: var(--acf-block-gallery-max-width, 0px) !important;
+
+                .acf-gallery-side-data {
+                  scrollbar-width: thin;
+
+                  .acf-gallery-side-info {
+                    width: calc(
+                      var(--acf-block-gallery-max-width, 100%) - 18px
+                    );
+                    max-width: var(
+                      --acf-block-gallery-max-width,
+                      0px
+                    ) !important;
+                  }
+                }
+              }
+            }
+
+            &.-open {
+              --acf-block-gallery-max-width: 252px;
+
+              .acf-gallery-main {
+                display: none;
               }
             }
           }
