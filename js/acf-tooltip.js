@@ -3,28 +3,32 @@ wp.domReady(() => {
   async function addAcfTooltipClassNames() {
     MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 
-    // observe DOM changes within the Block Editor container, so we can run mutationCallback() to add tooltip class names
-    var observer = new MutationObserver(mutationCallback);
-
-    const gutenbergSidebar = await waitForElement(
-      ".interface-interface-skeleton__sidebar"
-    );
-
-    if (gutenbergSidebar && gutenbergSidebar instanceof Node) {
-      observer.observe(gutenbergSidebar, {
-        attributes: true,
-        subtree: true,
-      });
-    }
-
     // fires when a DOM mutation occurs within Block Editor's sidebar (i.e. when you select a block etc.)
-    function mutationCallback(mutations, observer) {
+    function addTooltipClassNames(mutations, observer) {
       jQuery(".acf-field .acf-label:has(p.description)").addClass(
         "cloakwp-acf-tooltip"
       );
       jQuery(".acf-repeater .acf-th:has(p.description)").addClass(
         "cloakwp-acf-tooltip"
       );
+    }
+
+    if (document.body.classList.contains("block-editor-page")) {
+      // observe DOM changes within the Block Editor container, so we can run mutationCallback() to add tooltip class names
+      var observer = new MutationObserver(addTooltipClassNames);
+
+      const gutenbergSidebar = await waitForElement(
+        ".interface-interface-skeleton__sidebar"
+      );
+
+      if (gutenbergSidebar && gutenbergSidebar instanceof Node) {
+        observer.observe(gutenbergSidebar, {
+          attributes: true,
+          subtree: true,
+        });
+      }
+    } else {
+      addTooltipClassNames();
     }
   }
 
