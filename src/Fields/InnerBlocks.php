@@ -55,12 +55,21 @@ class InnerBlocks extends FlexibleContent
         // exclude 'Blocks' fields from Layouts to avoid infinite loop/recursion
         $fields = array_filter($fields, function ($field) use (&$count, $fields) {
           $count++;
+
+          if (!$field || !is_object($field)) {
+            return false;
+          }
+
           if (isset($field->excludeFromLayouts) && $field->excludeFromLayouts === true) {
             // `excludeFromLayouts` is a static property that can be set on custom fields to exclude them from InnerBlocks -- the InnerBlocks field itself uses this to prevent infinite recursion; TODO: allow InnerBlocks within InnerBlocks but limit nested recursion to a specified depth to prevent infinite loop.
             return false;
           }
 
-          $fieldClass = get_class($field);
+          try {
+            $fieldClass = get_class($field);
+          } catch (\Exception $e) {
+            return false;
+          }
 
           // Exclude top-level wrapping Accordion fields because the ACF Flexible Content field UI already wraps layouts in accordion:
           if (($count == 0 || $count == count($fields) - 1) && $fieldClass == Accordion::class) {
