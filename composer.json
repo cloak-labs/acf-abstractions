@@ -1,7 +1,7 @@
 {
   "name": "cloakwp/acf-abstractions",
   "description": "A set of OOP abstractions around ACF to improve developer experience.",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "license": "LGPL-3.0-only",
   "type": "wordpress-plugin",
   "require": {
