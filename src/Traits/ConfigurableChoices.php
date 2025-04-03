@@ -51,10 +51,6 @@ trait ConfigurableChoices
 
   protected function runCallback(callable $callback): void
   {
-    if (property_exists($this, 'setHook') && $this->setHook) {
-      add_action($this->setHook, $callback, 20); // Higher priority than initial setup
-    } else {
-      $callback();
-    }
+    add_action('acf/init', $callback, 8); // Higher priority than initial setup (less than 10 in order to run before ACF renders the field)
   }
 }

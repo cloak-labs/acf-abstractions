@@ -4,18 +4,12 @@ namespace CloakWP\ACF\Fields;
 
 use CloakWP\Core\PostReturnType;
 use CloakWP\Core\Utils;
-use CloakWP\ACF\Traits\ConfigurableChoices;
 
 /**
  * An auto-populated ACF select field that allows you to select a WordPress post type.
  */
 class PostTypeSelect extends PrepopulatedSelect
 {
-  use ConfigurableChoices;
-
-  // Post types need to be loaded after init
-  protected ?string $setHook = 'after_setup_theme';
-
   protected function setChoices(): void
   {
     $customPostTypes = Utils::getCustomPostTypes(PostReturnType::Objects);
