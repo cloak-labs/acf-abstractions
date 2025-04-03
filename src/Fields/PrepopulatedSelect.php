@@ -2,6 +2,7 @@
 
 namespace CloakWP\ACF\Fields;
 
+use CloakWP\ACF\Traits\ConfigurableChoices;
 use Extended\ACF\Fields\Select;
 
 /**
@@ -9,12 +10,7 @@ use Extended\ACF\Fields\Select;
  */
 abstract class PrepopulatedSelect extends Select
 {
-  /**
-   * The WordPress action hook to use for setting choices.
-   * Set to null to set choices immediately without a hook.
-   * @var string|null
-   */
-  protected ?string $setHook = null;
+  use ConfigurableChoices;
 
   /**
    * Constructor that sets up the field with prepopulated choices.
@@ -23,13 +19,15 @@ abstract class PrepopulatedSelect extends Select
   {
     parent::__construct($label, $name);
 
-    if ($this->setHook) {
-      add_action($this->setHook, function () {
-        $this->setChoices();
-      }, 10);
-    } else {
+    /**
+     * Important to call `setChoices` on `acf/init` using a priority < 10 (i.e. just before ACF 
+     * field stuff is finalized), giving as much time as possible for WP to finish scaffolding 
+     * before `setChoices` runs, as it likely needs to access stuff like CPTs which are only
+     * registered/available after a certain point.
+     */
+    add_action('acf/init', function () {
       $this->setChoices();
-    }
+    }, 5);
   }
 
   /**
@@ -44,39 +42,4 @@ abstract class PrepopulatedSelect extends Select
    * Abstract method that must be implemented by child classes to set the prepopulated choices.
    */
   abstract protected function setChoices(): void;
-
-  /**
-   * Include only specific choices in the select field.
-   */
-  public function include(array $enabledChoices): self
-  {
-    $callback = function () use ($enabledChoices) {
-      $validChoices = $this->settings['choices'];
-      $choices = [];
-
-      if ($enabledChoices) {
-        foreach ($enabledChoices as $choice) {
-          if (!array_key_exists($choice, $validChoices)) {
-            continue;
-          }
-
-          // Set the choices field based on enabled choices
-          $choices[$choice] = $validChoices[$choice];
-        }
-      } else {
-        $choices = $validChoices;
-      }
-
-      // Set filtered choices
-      $this->choices($choices);
-    };
-
-    if ($this->setHook) {
-      add_action($this->setHook, $callback, 10);
-    } else {
-      $callback();
-    }
-
-    return $this;
-  }
 }
