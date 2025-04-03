@@ -5,9 +5,17 @@
   --acf-block-field-px: var(--acf-spacing);
   --acf-block-field-py: var(--acf-spacing);
 
-  .acf-block-fields.acf-fields {
-    max-width: var(--cntr-w-wide);
-    margin: auto;
+  .acf-block-component {
+    .acf-block-fields {
+      .acf-fields {
+        max-width: var(--cntr-w-wide);
+        margin: auto;
+      }
+
+      p {
+        line-height: 1.25;
+      }
+    }
   }
 
   /* Fix horizontal padding of meta box title (it's off by default) */
@@ -353,6 +361,33 @@
                 display: none;
               }
             }
+          }
+        }
+      }
+
+      /* File field: fixes squished horizontal layout by making it vertical */
+      &.acf-field-file {
+        .acf-file-uploader {
+          --file-icon-height: 38px;
+
+          .file-icon {
+            padding: 5px;
+            border-bottom: #d5d9dd solid 1px;
+            border-right: none;
+            height: var(--file-icon-height);
+            width: 100%;
+
+            img {
+              max-width: 20px;
+            }
+          }
+
+          .file-info {
+            margin-left: 0px;
+            padding-top: calc(var(--file-icon-height) + 10px);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
           }
         }
       }
