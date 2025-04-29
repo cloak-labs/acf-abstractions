@@ -20,7 +20,6 @@ class FieldGroup
       'title' => $label,
       'style' => 'default', // ExtendedACF decided to make the default Field Group style 'seamless', so here we revert that back to the 'default' style
       'show_in_rest' => true,
-      // 'local' => 'php',
     ];
   }
 
@@ -31,7 +30,21 @@ class FieldGroup
 
   public function fields(array $fields): static
   {
-    $this->settings['fields'] = $fields;
+    // Process fields to handle nested arrays
+    $processedFields = [];
+    foreach ($fields as $field) {
+      if (is_array($field) && !isset($field['key'])) {
+        // If it's a regular array (not an ACF field array with a key), merge its contents
+        foreach ($field as $nestedField) {
+          $processedFields[] = $nestedField;
+        }
+      } else {
+        // Otherwise add the field directly
+        $processedFields[] = $field;
+      }
+    }
+
+    $this->settings['fields'] = $processedFields;
     return $this;
   }
 
