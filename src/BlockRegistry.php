@@ -2,8 +2,6 @@
 
 namespace CloakWP\ACF;
 
-use CloakWP\Core\Utils;
-
 /**
  * A singleton that stores and makes accessible all `CloakWP\ACF\Block` instances throughout the project
  */
@@ -15,9 +13,7 @@ class BlockRegistry
   /** Stores all CloakWP\ACF\Block instances. */
   protected array $blocks = [];
 
-  private function __construct()
-  {
-  }
+  private function __construct() {}
 
   /** Returns the BlockRegistry Singleton instance. */
   public static function getInstance(): static
@@ -30,8 +26,7 @@ class BlockRegistry
 
   public function addBlock(Block $block): static
   {
-    // By using deepCopy here, we're saving the *original* Block class instances in the BlockRegistry, therefore any subsequent changes to those Class instances won't affect the versions saved in the BlockRegistry
-    $this->blocks[] = Utils::deepCopy($block);
+    $this->blocks[] = $block;
 
     return $this;
   }
@@ -43,6 +38,6 @@ class BlockRegistry
    */
   public function getBlocks(): array
   {
-    return Utils::deepCopy($this->blocks);
+    return $this->blocks;
   }
 }
