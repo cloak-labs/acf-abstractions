@@ -47,7 +47,7 @@
   position: absolute;
   left: 0;
   top: 16px;
-  z-index: 1000;
+  z-index: 10000;
   background: var(--wp-components-color-foreground, #1e1e1e);
   color: var(--wp-components-color-foreground-inverted, #fff);
   opacity: 0.9;
