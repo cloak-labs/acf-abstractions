@@ -3,10 +3,7 @@
 namespace CloakWP\ACF\Fields;
 
 use CloakWP\Core\Enqueue\Stylesheet;
-use CloakWP\Core\Utils;
-use Extended\ACF\Fields\Field;
-use Extended\ACF\Fields\Group;
-use Extended\ACF\Fields\Tab;
+use Extended\ACF\Fields\{Field, Group, Tab};
 
 // Define the Breakpoint Enum
 enum Breakpoint: string
@@ -78,7 +75,7 @@ class ResponsiveField
 
       $innerFields[] = $tab;
 
-      $fieldAtBreakpoint = Utils::deepCopy($field);
+      $fieldAtBreakpoint = $field->cloneRecursively();
       $fieldReflection = new \ReflectionClass($fieldAtBreakpoint);
       $settingsProperty = $fieldReflection->getProperty('settings');
       $settingsProperty->setAccessible(true);
