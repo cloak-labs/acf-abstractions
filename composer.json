@@ -1,14 +1,20 @@
 {
   "name": "cloakwp/acf-abstractions",
   "description": "A set of OOP abstractions around ACF to improve developer experience.",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "license": "LGPL-3.0-only",
   "type": "wordpress-plugin",
   "require": {
     "composer/installers": "^2.2",
     "cloakwp/core": "^0.0",
-    "vinkla/extended-acf": "dev-master || dev-main"
+    "vinkla/extended-acf": "dev-feat/transformers as 15.0.0"
   },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/kaelansmith/extended-acf"
+    }
+  ],
   "autoload": {
     "psr-4": {
       "CloakWP\\ACF\\": "src"
