@@ -5,15 +5,13 @@
   --acf-block-field-px: var(--acf-spacing);
   --acf-block-field-py: var(--acf-spacing);
 
-  .acf-block-component {
-    .acf-block-fields {
-      .acf-fields {
-        max-width: var(--cntr-w-wide);
-        margin: auto;
-      }
-
-      p {
-        line-height: 1.25;
+  .interface-interface-skeleton__content {
+    .acf-block-component {
+      .acf-block-fields {
+        .acf-fields {
+          max-width: var(--cntr-w-wide);
+          margin: auto;
+        }
       }
     }
   }
@@ -23,9 +21,19 @@
     padding: 0 24px 0 var(--acf-block-field-px);
   }
 
-  .interface-interface-skeleton__sidebar .acf-field {
-    min-width: 100% !important;
-    width: 100% !important;
+  .interface-interface-skeleton__sidebar {
+    .acf-block-component {
+      .acf-block-fields {
+        p {
+          line-height: 1.25;
+        }
+      }
+    }
+
+    .acf-field {
+      min-width: 100% !important;
+      width: 100% !important;
+    }
   }
 
   .acf-fields {
@@ -95,6 +103,16 @@
           > table > tbody > tr.acf-row > .acf-fields > .acf-field {
             padding: 16px 8px;
           }
+
+          /* Slightly expand width of Flexible Content fields nested within Repeaters */
+          .acf-field-flexible-content {
+            padding-left: 4px !important;
+            padding-right: 4px !important;
+
+            > .acf-label {
+              padding: 0px 4px;
+            }
+          }
         }
       }
 
@@ -158,6 +176,13 @@
             border-radius: var(--cloakwp-acf-ui-group-border-radius);
             box-shadow: 0px 1px 3px -1px rgba(16, 24, 40, 0.1);
 
+            > .acf-field:first-child {
+              border-top-left-radius: var(--cloakwp-acf-ui-group-border-radius);
+              border-top-right-radius: var(
+                --cloakwp-acf-ui-group-border-radius
+              );
+            }
+
             > .acf-field:last-child {
               border-bottom-left-radius: var(
                 --cloakwp-acf-ui-group-border-radius
@@ -165,6 +190,22 @@
               border-bottom-right-radius: var(
                 --cloakwp-acf-ui-group-border-radius
               );
+            }
+          }
+        }
+      }
+
+      &.acf-field-flexible-content {
+        > .acf-input {
+          > .acf-flexible-content {
+            > .values {
+              > .layout {
+                background: #f7f7f7;
+
+                > .acf-fc-layout-handle {
+                  background: #fff;
+                }
+              }
             }
           }
         }
