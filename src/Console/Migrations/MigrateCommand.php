@@ -389,7 +389,6 @@ class MigrateCommand
     $command = "db export {$backupFile} --porcelain";
     $result = WP_CLI::runcommand($command, [
       'return' => true,
-      'exit_error' => false,
     ]);
 
     if ($result) {
@@ -397,7 +396,7 @@ class MigrateCommand
         WP_CLI::success("Database backup created: {$backupFile}");
       }
     } else {
-      WP_CLI::error("Failed to create database backup ... aborting {$this->operationType}.");
+      WP_CLI::error("Failed to create database backup. Aborting {$this->operationType}.");
     }
   }
 }
