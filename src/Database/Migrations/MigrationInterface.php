@@ -73,11 +73,4 @@ interface MigrationInterface
   public function getOldFields(): FieldGroup|array;
   public function getNewFields(): FieldGroup|array;
   public function getStorageLocations(): array;
-  // public function getFieldMigrators(): array;
-
-  // public function registerFieldMigrator(string $type, FieldMigratorInterface $migrator): static;
-  // public function setDryRun(bool $isDryRun): static;
-  // public function run(): array;
-  // public function dryRun(): array;
-  // public function generateRollback(): static;
 }

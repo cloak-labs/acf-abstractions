@@ -39,6 +39,14 @@ abstract class AbstractMigration implements MigrationInterface
   protected array $storageLocations = [];
 
   /**
+   * Field value transformers indexed by field name
+   * 
+   * @var array<string, callable>
+   */
+  protected array $fieldValueTransformers = [];
+
+
+  /**
    * Constructor
    */
   public function __construct(string $name = '')
@@ -83,6 +91,30 @@ abstract class AbstractMigration implements MigrationInterface
     $this->storageLocations[] = $location;
     return $this;
   }
+
+  /**
+   * Register a field value transformer function that will be applied during migration
+   * 
+   * @param string $fieldName The field name to apply the transformer to
+   * @param callable $transformer Function that receives the old value and returns the transformed value
+   * @return static
+   */
+  public function transformFieldValue(string $fieldName, callable $transformer): static
+  {
+    $this->fieldValueTransformers[$fieldName] = $transformer;
+    return $this;
+  }
+
+  /**
+   * Get all registered field value transformers
+   * 
+   * @return array<string, callable> Array of field transformers indexed by field name
+   */
+  public function getFieldValueTransformers(): array
+  {
+    return $this->fieldValueTransformers;
+  }
+
 
   // Getters
   public function getName(): string
