@@ -4,24 +4,25 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c62b4fdea56da1535f5761d817b2fd9f",
+    "content-hash": "168492d5e87342a6b3fbc9c79199b5c1",
     "packages": [
         {
             "name": "cloakwp/core",
-            "version": "0.0.7",
+            "version": "0.0.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/cloak-labs/cloakwp-core.git",
-                "reference": "9f9e470a4a98c9a4d26c067578722b66deb230ed"
+                "reference": "279b41ead51fe207171e8cf1f073554d11b7ea88"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/cloak-labs/cloakwp-core/zipball/9f9e470a4a98c9a4d26c067578722b66deb230ed",
-                "reference": "9f9e470a4a98c9a4d26c067578722b66deb230ed",
+                "url": "https://api.github.com/repos/cloak-labs/cloakwp-core/zipball/279b41ead51fe207171e8cf1f073554d11b7ea88",
+                "reference": "279b41ead51fe207171e8cf1f073554d11b7ea88",
                 "shasum": ""
             },
             "require": {
                 "composer/installers": "^2.2",
+                "inpsyde/wp-context": "^1.5",
                 "myclabs/deep-copy": "^1.11",
                 "snicco/better-wp-api": "^1.9"
             },
@@ -38,9 +39,9 @@
             "description": "A set of OOP abstractions around WordPress core to improve developer experience.",
             "support": {
                 "issues": "https://github.com/cloak-labs/cloakwp-core/issues",
-                "source": "https://github.com/cloak-labs/cloakwp-core/tree/v0.0.7"
+                "source": "https://github.com/cloak-labs/cloakwp-core/tree/v0.0.10"
             },
-            "time": "2025-02-17T21:07:48+00:00"
+            "time": "2025-05-01T22:02:11+00:00"
         },
         {
             "name": "composer/installers",
@@ -189,17 +190,77 @@
             "time": "2024-06-24T20:46:46+00:00"
         },
         {
-            "name": "myclabs/deep-copy",
-            "version": "1.13.0",
+            "name": "inpsyde/wp-context",
+            "version": "1.5.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "024473a478be9df5fdaca2c793f2232fe788e414"
+                "url": "https://github.com/inpsyde/wp-context.git",
+                "reference": "1350ada72517f5d374bff9409b4ea5a02377ec1a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/024473a478be9df5fdaca2c793f2232fe788e414",
-                "reference": "024473a478be9df5fdaca2c793f2232fe788e414",
+                "url": "https://api.github.com/repos/inpsyde/wp-context/zipball/1350ada72517f5d374bff9409b4ea5a02377ec1a",
+                "reference": "1350ada72517f5d374bff9409b4ea5a02377ec1a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "brain/monkey": "^2.6.1",
+                "inpsyde/php-coding-standards": "^1",
+                "inpsyde/wp-stubs": "dev-main",
+                "mockery/mockery": "~1.3.6",
+                "phpunit/phpunit": "~7.5.20 || ^8",
+                "vimeo/psalm": "^4.27.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Inpsyde\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "gpl-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Inpsyde GmbH",
+                    "email": "hello@inpsyde.com",
+                    "homepage": "https://inpsyde.com/",
+                    "role": "Company"
+                },
+                {
+                    "name": "Giuseppe Mazzapica",
+                    "email": "g.mazzapica@inpsyde.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A single-class utility to check the running context in WordPress sites.",
+            "support": {
+                "issues": "https://github.com/inpsyde/wp-context/issues",
+                "source": "https://github.com/inpsyde/wp-context/tree/1.5.1"
+            },
+            "time": "2024-10-16T10:44:18+00:00"
+        },
+        {
+            "name": "myclabs/deep-copy",
+            "version": "1.13.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/myclabs/DeepCopy.git",
+                "reference": "1720ddd719e16cf0db4eb1c6eca108031636d46c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/1720ddd719e16cf0db4eb1c6eca108031636d46c",
+                "reference": "1720ddd719e16cf0db4eb1c6eca108031636d46c",
                 "shasum": ""
             },
             "require": {
@@ -238,7 +299,7 @@
             ],
             "support": {
                 "issues": "https://github.com/myclabs/DeepCopy/issues",
-                "source": "https://github.com/myclabs/DeepCopy/tree/1.13.0"
+                "source": "https://github.com/myclabs/DeepCopy/tree/1.13.1"
             },
             "funding": [
                 {
@@ -246,7 +307,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-02-12T12:17:51+00:00"
+            "time": "2025-04-29T12:36:36+00:00"
         },
         {
             "name": "snicco/better-wp-api",
@@ -355,29 +416,28 @@
         },
         {
             "name": "vinkla/extended-acf",
-            "version": "dev-master",
+            "version": "dev-feat/transformers",
             "source": {
                 "type": "git",
-                "url": "https://github.com/vinkla/extended-acf.git",
-                "reference": "fd50308460f6d71e3366c87437c588e51ff489b1"
+                "url": "https://github.com/kaelansmith/extended-acf.git",
+                "reference": "2f2f31cf86f7e56f58a568a1b82f6341b30db281"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/vinkla/extended-acf/zipball/fd50308460f6d71e3366c87437c588e51ff489b1",
-                "reference": "fd50308460f6d71e3366c87437c588e51ff489b1",
+                "url": "https://api.github.com/repos/kaelansmith/extended-acf/zipball/2f2f31cf86f7e56f58a568a1b82f6341b30db281",
+                "reference": "2f2f31cf86f7e56f58a568a1b82f6341b30db281",
                 "shasum": ""
             },
             "require": {
                 "php": "^8.2"
             },
             "require-dev": {
-                "phpunit/phpunit": "^11.0",
+                "phpunit/phpunit": "^11.0 || ^12.0",
                 "symfony/var-dumper": "^7.0"
             },
             "suggest": {
                 "symfony/var-dumper": "Required to use the dump method (^7.0)."
             },
-            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -385,14 +445,21 @@
                 }
             },
             "autoload": {
-                "files": [
-                    "src/helpers.php"
-                ],
                 "psr-4": {
                     "Extended\\ACF\\": "src/"
-                }
+                },
+                "files": [
+                    "src/helpers.php"
+                ]
             },
-            "notification-url": "https://packagist.org/downloads/",
+            "autoload-dev": {
+                "psr-4": {
+                    "Extended\\ACF\\Tests\\": "tests/"
+                },
+                "files": [
+                    "tests/helpers.php"
+                ]
+            },
             "license": [
                 "MIT"
             ],
@@ -412,14 +479,20 @@
                 "wordpress"
             ],
             "support": {
-                "issues": "https://github.com/vinkla/extended-acf/issues",
-                "source": "https://github.com/vinkla/extended-acf/tree/14.2.2"
+                "source": "https://github.com/kaelansmith/extended-acf/tree/feat/transformers"
             },
-            "time": "2025-01-24T12:29:04+00:00"
+            "time": "2025-04-29T16:21:07+00:00"
         }
     ],
     "packages-dev": [],
-    "aliases": [],
+    "aliases": [
+        {
+            "package": "vinkla/extended-acf",
+            "version": "dev-feat/transformers",
+            "alias": "15.0.0",
+            "alias_normalized": "15.0.0.0"
+        }
+    ],
     "minimum-stability": "stable",
     "stability-flags": {
         "vinkla/extended-acf": 20
