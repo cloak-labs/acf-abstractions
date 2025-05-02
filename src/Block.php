@@ -61,10 +61,24 @@ class Block
 
   public function fields(array $fields): static
   {
+    // Process fields to handle nested arrays
+    $flattenedFields = [];
+    foreach ($fields as $field) {
+      if (is_array($field) && !isset($field['key'])) {
+        // If it's a regular array (not an ACF field array with a key), merge its contents
+        foreach ($field as $nestedField) {
+          $flattenedFields[] = $nestedField;
+        }
+      } else {
+        // Otherwise add the field directly
+        $flattenedFields[] = $field;
+      }
+    }
+
     if (empty($this->fields)) {
-      $this->fields = $fields;
+      $this->fields = $flattenedFields;
     } else {
-      $this->fields = array_merge($this->fields, $fields);
+      $this->fields = array_merge($this->fields, $flattenedFields);
     }
 
     return $this;

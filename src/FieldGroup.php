@@ -30,21 +30,21 @@ class FieldGroup
 
   public function fields(array $fields): static
   {
-    // Process fields to handle nested arrays
-    $processedFields = [];
+    // flatten fields to handle nested arrays
+    $flattenedFields = [];
     foreach ($fields as $field) {
       if (is_array($field) && !isset($field['key'])) {
         // If it's a regular array (not an ACF field array with a key), merge its contents
         foreach ($field as $nestedField) {
-          $processedFields[] = $nestedField;
+          $flattenedFields[] = $nestedField;
         }
       } else {
         // Otherwise add the field directly
-        $processedFields[] = $field;
+        $flattenedFields[] = $field;
       }
     }
 
-    $this->settings['fields'] = $processedFields;
+    $this->settings['fields'] = $flattenedFields;
     return $this;
   }
 
