@@ -18,6 +18,7 @@ class Video implements FieldSet
         ->choices([
           'url' => 'Embed from URL',
           'file' => 'MP4 File',
+          'multiple' => 'Multiple Sources',
         ])
         ->default('url'),
       Text::make('Video Embed URL', 'url')
@@ -35,7 +36,7 @@ class Video implements FieldSet
             ->acceptedFileTypes(['webm']),
         ])
         ->conditionalLogic([
-          ConditionalLogic::where('src', '==', 'file')
+          ConditionalLogic::where('src', '!=', 'url')
         ]),
       TrueFalse::make('Loop Video', 'loop')
         ->stylized(),
