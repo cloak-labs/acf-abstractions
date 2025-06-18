@@ -124,6 +124,8 @@ class InnerBlocks extends FlexibleContent
         // Adjust the ACF formatting of InnerBlocks field values to mimic the standard Block data format: 
         add_filter("acf/format_value/key={$result['key']}", function ($value, $post_id, $field) {
             $formattedInnerBlocksValue = [];
+            if (empty($value) || !is_array($value)) return $value;
+
             foreach ($value as $layout) {
                 $name = $layout['acf_fc_layout'];
                 unset($layout['acf_fc_layout']);
