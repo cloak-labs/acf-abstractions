@@ -126,6 +126,31 @@ class InnerBlocks extends FlexibleContent
             $formattedInnerBlocksValue = [];
             if (empty($value) || !is_array($value)) return $value;
 
+            // Determine the actual post ID that contains this InnerBlocks field
+            $actualPostId = null;
+
+            // Check if $post_id is actually a post ID or a block ID
+            if ($post_id) {
+                $post = get_post($post_id);
+                if ($post && $post->post_type !== 'wp_block') {
+                    // This is a valid post ID
+                    $actualPostId = $post_id;
+                } else {
+                    // This is likely a block ID, try to get the parent post
+                    $actualPostId = get_the_ID();
+
+                    // If that doesn't work, try to get from global query
+                    if (!$actualPostId && is_object($GLOBALS['wp_query'])) {
+                        $actualPostId = $GLOBALS['wp_query']->get_queried_object_id();
+                    }
+                }
+            }
+
+            // Fallback to global post if still no valid post ID
+            if (!$actualPostId && isset($GLOBALS['post'])) {
+                $actualPostId = $GLOBALS['post']->ID;
+            }
+
             foreach ($value as $layout) {
                 $name = $layout['acf_fc_layout'];
                 unset($layout['acf_fc_layout']);
@@ -137,7 +162,7 @@ class InnerBlocks extends FlexibleContent
                     'data' => $layout
                 ];
 
-                $formattedBlock = apply_filters('cloakwp/block', $defaultBlock, ['name' => $name, 'type' => 'acf'], $post_id);
+                $formattedBlock = apply_filters('cloakwp/block', $defaultBlock, ['name' => $name, 'type' => 'acf'], $actualPostId);
                 $formattedInnerBlocksValue[] = $formattedBlock;
             }
 
