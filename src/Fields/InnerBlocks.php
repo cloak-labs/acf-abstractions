@@ -137,7 +137,7 @@ class InnerBlocks extends FlexibleContent
                     'data' => $layout
                 ];
 
-                $formattedBlock = apply_filters('cloakwp/block', $defaultBlock, ['name' => $name, 'type' => 'acf']);
+                $formattedBlock = apply_filters('cloakwp/block', $defaultBlock, ['name' => $name, 'type' => 'acf'], $post_id);
                 $formattedInnerBlocksValue[] = $formattedBlock;
             }
 
