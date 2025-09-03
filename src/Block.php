@@ -176,7 +176,7 @@ class Block
 
       // optionally filter this block's BlockParser JSON output (affects REST API, Iframe previews, etc.) with user-provided callback:
       if ($this->filterValueCallback) {
-        add_filter("cloakwp/block/name=$name", $this->filterValueCallback, 10, 2);
+        add_filter("cloakwp/block/name=$name", $this->filterValueCallback, 10, 3);
       }
 
       $this->isRegistered = true;
