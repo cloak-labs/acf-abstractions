@@ -15,7 +15,7 @@ class Block
   protected array $fieldGroupSettings = [];
   protected string $blockJsonPath;
   protected string $blockJson;
-  protected mixed $parsedBlockJson;
+  public mixed $parsedBlockJson;
   protected array $args = [];
   protected array $fields = [];
   protected bool $collapsible = true;
