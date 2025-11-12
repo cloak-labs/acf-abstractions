@@ -9,6 +9,8 @@ use Extended\ACF\Fields\{Group, Accordion};
  */
 class CollapsibleGroup extends Group
 {
+  protected bool $defaultOpen = true;
+
   public static function make(string $label, string|null $name = null): static
   {
     $self = new static($label, $name);
@@ -16,14 +18,22 @@ class CollapsibleGroup extends Group
     return $self;
   }
 
+  public function defaultOpen(bool $defaultOpen = true): static
+  {
+    $this->defaultOpen = $defaultOpen;
+    return $this;
+  }
+
   public function fields(array $fields): static
   {
     $accordionLabel = $this->settings['label'];
+    $accordionStart = Accordion::make($this->settings['label'], $this->settings['name'] . '_accordion')->multiExpand();
+    if ($this->defaultOpen) {
+      $accordionStart->open();
+    }
 
     $this->settings['sub_fields'] = [
-      Accordion::make($this->settings['label'], $this->settings['name'] . '_accordion')
-        ->open()
-        ->multiExpand(),
+      $accordionStart,
       ...$fields,
       Accordion::make($accordionLabel . ' Endpoint')
         ->endpoint()
