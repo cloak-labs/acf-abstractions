@@ -100,7 +100,11 @@
 
         .acf-repeater {
           /* Reduce horizontal padding to create more space for inner fields */
-          > table > tbody > tr.acf-row > .acf-fields > .acf-field {
+          > table
+            > tbody
+            > tr.acf-row
+            > .acf-fields
+            > .acf-field:not(.acf-field-group) {
             padding: 16px 8px;
           }
 
