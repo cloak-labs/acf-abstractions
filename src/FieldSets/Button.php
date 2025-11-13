@@ -10,20 +10,18 @@ use Extended\ACF\Fields\{Link, Select};
  */
 class Button implements FieldSet
 {
+  public static array $styles = [
+    'default' => 'Primary',
+    'secondary' => 'Secondary',
+    'outline' => 'Outline',
+    'ghost' => 'Ghost',
+    'link' => 'Link',
+    'destructive' => 'Destructive'
+  ];
+
   public static function fields(): array
   {
-    $styleChoices = [
-      'default' => 'Primary',
-      'secondary' => 'Secondary',
-      'outline' => 'Outline',
-      'ghost' => 'Ghost',
-      'link' => 'Link',
-      'destructive' => 'Destructive'
-    ];
-
-    if (function_exists('apply_filters')) {
-      $styleChoices = apply_filters('cloakwp/acf/button/styles', $styleChoices);
-    }
+    $styleChoices = apply_filters('cloakwp/acf/button/styles', self::$styles);
 
     return [
       Link::make('Link')
