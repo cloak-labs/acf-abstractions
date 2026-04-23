@@ -1,3 +1,5 @@
+if (!wp) return;
+
 wp.domReady(() => {
   /* Adds a tooltip custom class to ACF fields with instructions, including in the block editor where the DOM is constantly re-rendered */
   async function addAcfTooltipClassNames() {
