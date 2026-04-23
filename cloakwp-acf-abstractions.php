@@ -53,6 +53,6 @@ Stylesheet::make("cloakwp_acf_tooltip_styles")
 Script::make("cloakwp_acf_tooltip_script")
   ->hooks(["admin_enqueue_scripts", "enqueue_block_editor_assets"])
   ->src(plugin_dir_url(__FILE__) . '/js/acf-tooltip.js')
-  ->deps(["jquery"])
+  ->deps(["jquery", "wp-dom-ready"])
   ->version(\WP_ENV === "development" ? filemtime(plugin_dir_path(__FILE__) . '/js/acf-tooltip.js') : '0.0.1')
   ->enqueue();
