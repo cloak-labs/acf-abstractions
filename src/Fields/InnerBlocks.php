@@ -3,7 +3,7 @@
 namespace CloakWP\ACF\Fields;
 
 use CloakWP\ACF\BlockRegistry;
-use Extended\ACF\Fields\{Accordion, FlexibleContent, Layout};
+use Extended\ACF\Fields\{Accordion, FlexibleContent, Layout, Text};
 
 /**
  * An ACF field that allows you to nest ACF blocks (that are registered as CloakWP\ACF\Block instances) within eachother. It's an abstraction around ACF's Flexible Content field.
@@ -90,7 +90,7 @@ class InnerBlocks extends FlexibleContent
                 $settings = $innerBlock->getFieldGroupSettings();
                 $included = empty($this->includes) || in_array($settings['name'], $this->includes);
 
-                $is_inner_block_same_as_parent_block = $parentKey == $settings['key'] || str_starts_with($parentKey, $settings['key']); // we don't allow nesting a block within itself
+                $is_inner_block_same_as_parent_block = $parentKey == $settings['key'] || str_starts_with($parentKey, $settings['key']); // we don't allow nesting a block within itself (infinite recursion)
                 $excluded = in_array($settings['name'], $this->excludes) || $is_inner_block_same_as_parent_block;
 
                 // filter inner blocks based on whether they've been included or excluded
@@ -106,7 +106,7 @@ class InnerBlocks extends FlexibleContent
                     // Make a Flexible Content "layout" using each block's fields
                     $final_layouts[] = Layout::make($settings['title'], $settings['name'])
                         ->layout('block')
-                        ->fields($fields);
+                        ->fields([...$fields, Text::make('CSS Class(es)', 'className')]);
                 }
             }
         }
