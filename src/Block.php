@@ -18,6 +18,7 @@ class Block
   public mixed $parsedBlockJson;
   protected array $args = [];
   protected array $fields = [];
+  protected array $contentTypeDependencies = [];
   protected bool $collapsible = true;
   public string $emptyFieldsMessage = '';
   protected bool $isRegistered = false;
@@ -69,7 +70,7 @@ class Block
         foreach ($field as $nestedField) {
           $flattenedFields[] = $nestedField;
         }
-      } else {
+      } elseif ($field) {
         // Otherwise add the field directly
         $flattenedFields[] = $field;
       }
@@ -109,6 +110,20 @@ class Block
     }
 
     return $this;
+  }
+
+  /**
+   * Require one or more registered ContentTypes before this block is registered.
+   */
+  public function dependsOnTypes(array $contentTypes): static
+  {
+    $this->contentTypeDependencies = $contentTypes;
+    return $this;
+  }
+
+  public function getContentTypeDependencies(): array
+  {
+    return $this->contentTypeDependencies;
   }
 
   /**
