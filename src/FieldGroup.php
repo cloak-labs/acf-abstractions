@@ -36,9 +36,9 @@ class FieldGroup
       if (is_array($field) && !isset($field['key'])) {
         // If it's a regular array (not an ACF field array with a key), merge its contents
         foreach ($field as $nestedField) {
-          $flattenedFields[] = $nestedField;
+           if ($nestedField) $flattenedFields[] = $nestedField;
         }
-      } else {
+      } else if ($field) {
         // Otherwise add the field directly
         $flattenedFields[] = $field;
       }
