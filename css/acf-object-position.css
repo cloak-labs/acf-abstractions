@@ -1,0 +1,142 @@
+/* ACF's .acf-bl/.acf-hl clearfix pseudos become grid items — remove them. */
+.cloakwp-object-position .acf-radio-list::before,
+.cloakwp-object-position .acf-radio-list::after {
+  content: none !important;
+  display: none !important;
+}
+
+.cloakwp-object-position .acf-radio-list {
+  display: grid;
+  grid-template-columns: repeat(3, 32px);
+  gap: 2px;
+  width: fit-content;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  border: 1px solid #d4d7dc;
+  border-radius: 6px;
+  background: #fff;
+}
+
+.cloakwp-object-position .acf-radio-list li {
+  margin: 0;
+  padding: 0;
+  float: none;
+  clear: none;
+}
+
+.cloakwp-object-position .acf-radio-list li label {
+  position: relative;
+  display: block;
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  border-radius: 4px;
+  color: #848c94;
+  font-size: 0;
+  line-height: 0;
+  cursor: pointer;
+  transition:
+    color 0.1s ease,
+    background-color 0.1s ease;
+}
+
+.cloakwp-object-position .acf-radio-list li label:hover {
+  color: var(--cloakwp-acf-ui-accent-color, #3858e9);
+  background-color: rgba(56, 88, 233, 0.06);
+}
+
+.cloakwp-object-position .acf-radio-list li label input[type="radio"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Frame */
+.cloakwp-object-position .acf-radio-list li label::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1.5px solid currentColor;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+/* Focal-point dot */
+.cloakwp-object-position .acf-radio-list li label::after {
+  content: "";
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  pointer-events: none;
+}
+
+.cloakwp-object-position .acf-radio-list li label:has(input[value="left_top"])::after {
+  top: 7px;
+  left: 7px;
+}
+
+.cloakwp-object-position .acf-radio-list li label:has(input[value="top"])::after {
+  top: 7px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.cloakwp-object-position .acf-radio-list li label:has(input[value="right_top"])::after {
+  top: 7px;
+  right: 7px;
+}
+
+.cloakwp-object-position .acf-radio-list li label:has(input[value="left"])::after {
+  top: 50%;
+  left: 7px;
+  transform: translateY(-50%);
+}
+
+.cloakwp-object-position .acf-radio-list li label:has(input[value="center"])::after {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.cloakwp-object-position .acf-radio-list li label:has(input[value="right"])::after {
+  top: 50%;
+  right: 7px;
+  transform: translateY(-50%);
+}
+
+.cloakwp-object-position .acf-radio-list li label:has(input[value="left_bottom"])::after {
+  bottom: 7px;
+  left: 7px;
+}
+
+.cloakwp-object-position .acf-radio-list li label:has(input[value="bottom"])::after {
+  bottom: 7px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.cloakwp-object-position .acf-radio-list li label:has(input[value="right_bottom"])::after {
+  bottom: 7px;
+  right: 7px;
+}
+
+.cloakwp-object-position .acf-radio-list li label:has(input[type="radio"]:focus-visible) {
+  outline: 2px solid var(--cloakwp-acf-ui-accent-color, #3858e9);
+  outline-offset: 1px;
+}
+
+.cloakwp-object-position .acf-radio-list li label:has(input[type="radio"]:checked),
+.cloakwp-object-position .acf-radio-list li label.selected {
+  color: var(--cloakwp-acf-ui-accent-color, #3858e9);
+  background-color: rgba(56, 88, 233, 0.1);
+}
