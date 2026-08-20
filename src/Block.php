@@ -183,10 +183,17 @@ class Block
 
       // Only register field group if not using UI fields
       if (!$this->useUIFields) {
-        $fieldGroupSettings = $this->getFieldGroupSettings();
-        add_action('acf/init', function () use ($fieldGroupSettings) {
-          register_extended_field_group($fieldGroupSettings);
-        });
+        // Extended ACF: register field groups on acf/include_fields (after macros on acf/init).
+        // Build settings inside the callback so field objects (and macros) are resolved then.
+        $register = function () {
+          register_extended_field_group($this->getFieldGroupSettings());
+        };
+
+        if (did_action('acf/include_fields')) {
+          $register();
+        } else {
+          add_action('acf/include_fields', $register);
+        }
       }
 
       // optionally filter this block's BlockParser JSON output (affects REST API, Iframe previews, etc.) with user-provided callback:

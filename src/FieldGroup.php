@@ -155,9 +155,17 @@ class FieldGroup
 
   public function register()
   {
-    add_action('acf/init', function () {
+    // Extended ACF: register field groups on acf/include_fields (after macros on acf/init).
+    $register = function () {
       $this->get();
-    });
+    };
+
+    if (did_action('acf/include_fields')) {
+      $register();
+      return;
+    }
+
+    add_action('acf/include_fields', $register);
   }
 
   public function get(): array

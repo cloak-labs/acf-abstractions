@@ -115,11 +115,11 @@ class InnerBlocks extends FlexibleContent
     }
 
     /** @internal */
-    public function get(string|null $parentKey = null): array
+    public function toArray(string|null $parentKey = null): array
     {
-        $this->settings['layouts'] = $this->createLayoutsFromBlocks($parentKey); // we copied get() from the base Field class just to add this
+        $this->settings['layouts'] = $this->createLayoutsFromBlocks($parentKey); // we copied toArray() from the base Field class just to add this
 
-        $result = parent::get($parentKey);
+        $result = parent::toArray($parentKey);
 
         // Adjust the ACF formatting of InnerBlocks field values to mimic the standard Block data format: 
         add_filter("acf/format_value/key={$result['key']}", function ($value, $post_id, $field) {

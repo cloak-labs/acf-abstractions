@@ -12,7 +12,7 @@ class ExtendedAcfFieldResolver implements FieldResolverInterface
   public function supports($field): bool
   {
     return is_object($field) &&
-      method_exists($field, 'get') &&
+      method_exists($field, 'toArray') &&
       class_exists('\\Extended\\ACF\\Fields\\Field') &&
       $field instanceof \Extended\ACF\Fields\Field;
   }
@@ -20,6 +20,6 @@ class ExtendedAcfFieldResolver implements FieldResolverInterface
   public function resolve($field): array
   {
     // FieldGroupResolver::purgeKeys(); // TODO: consider purging keys here as well.. currently only purges if users provides fields wrapped by FieldGroup (see FieldGroupResolver)
-    return $field->get();
+    return $field->toArray();
   }
 }
