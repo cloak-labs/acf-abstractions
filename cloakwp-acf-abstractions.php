@@ -32,6 +32,8 @@ if (!defined('WPINC')) {
   die;
 }
 
+\CloakWP\ACF\ConditionalChoices\Bootstrap::boot();
+
 Stylesheet::make("cloakwp_acf_general_styles")
   ->hooks(["admin_enqueue_scripts", "enqueue_block_editor_assets"])
   ->src(plugin_dir_url(__FILE__) . '/css/acf-general.css')
@@ -55,4 +57,18 @@ Script::make("cloakwp_acf_tooltip_script")
   ->src(plugin_dir_url(__FILE__) . '/js/acf-tooltip.js')
   ->deps(["jquery", "wp-dom-ready"])
   ->version(\WP_ENV === "development" ? filemtime(plugin_dir_path(__FILE__) . '/js/acf-tooltip.js') : '0.0.1')
+  ->enqueue();
+
+Script::make("cloakwp_acf_conditional_choices")
+  ->hooks(["admin_enqueue_scripts", "enqueue_block_editor_assets"])
+  ->src(plugin_dir_url(__FILE__) . '/js/conditional-choices.js')
+  ->deps(["jquery", "acf-input"])
+  ->version(\WP_ENV === "development" ? filemtime(plugin_dir_path(__FILE__) . '/js/conditional-choices.js') : '0.0.1')
+  ->inFooter()
+  ->enqueue();
+
+Stylesheet::make("cloakwp_acf_conditional_choices_styles")
+  ->hooks(["admin_enqueue_scripts", "enqueue_block_editor_assets"])
+  ->src(plugin_dir_url(__FILE__) . '/css/conditional-choices.css')
+  ->version(\WP_ENV === "development" ? filemtime(plugin_dir_path(__FILE__) . '/css/conditional-choices.css') : '0.0.1')
   ->enqueue();
