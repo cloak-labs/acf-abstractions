@@ -1,3 +1,2 @@
-constants.php
-studio.json
-vendor
+/vendor/
+/composer.lock
