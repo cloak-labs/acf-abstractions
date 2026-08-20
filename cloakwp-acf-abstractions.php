@@ -34,6 +34,25 @@ if (!defined('WPINC')) {
 
 \CloakWP\ACF\ConditionalChoices\Bootstrap::boot();
 
+add_filter('acf/get_field_label', function (string $label, array $field, string $context): string {
+  if ($context === 'admin' || $label === '') {
+    return $label;
+  }
+
+  $instructions = $field['instructions'] ?? '';
+  if ($instructions === '' && !empty($field['hint'])) {
+    $instructions = $field['hint'];
+  }
+  if ($instructions === '') {
+    return $label;
+  }
+
+  return $label . sprintf(
+    ' <span class="cloakwp-acf-tooltip-icon" tabindex="0" role="img" aria-label="%s"></span>',
+    esc_attr(wp_strip_all_tags((string) $instructions))
+  );
+}, 10, 3);
+
 Stylesheet::make("cloakwp_acf_general_styles")
   ->hooks(["admin_enqueue_scripts", "enqueue_block_editor_assets"])
   ->src(plugin_dir_url(__FILE__) . '/css/acf-general.css')
@@ -50,13 +69,6 @@ Stylesheet::make("cloakwp_acf_tooltip_styles")
   ->hooks(["admin_enqueue_scripts", "enqueue_block_editor_assets"])
   ->src(plugin_dir_url(__FILE__) . '/css/acf-tooltip.css')
   ->version(\WP_ENV === "development" ? filemtime(plugin_dir_path(__FILE__) . '/css/acf-tooltip.css') : '0.0.1')
-  ->enqueue();
-
-Script::make("cloakwp_acf_tooltip_script")
-  ->hooks(["admin_enqueue_scripts", "enqueue_block_editor_assets"])
-  ->src(plugin_dir_url(__FILE__) . '/js/acf-tooltip.js')
-  ->deps(["jquery", "wp-dom-ready"])
-  ->version(\WP_ENV === "development" ? filemtime(plugin_dir_path(__FILE__) . '/js/acf-tooltip.js') : '0.0.1')
   ->enqueue();
 
 Script::make("cloakwp_acf_conditional_choices")
