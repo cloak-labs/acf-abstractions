@@ -1,13 +1,12 @@
 {
   "name": "cloakwp/acf-abstractions",
   "description": "A set of OOP abstractions around ACF to improve developer experience.",
-  "version": "0.0.24",
   "license": "LGPL-3.0-only",
   "type": "wordpress-plugin",
   "require": {
     "php": ">=8.4",
     "composer/installers": "^2.2",
-    "cloakwp/core": "^0.0",
+    "cloakwp/core": "dev-main",
     "vinkla/extended-acf": "dev-feat/v15-cloakwp-deltas as 15.1.0"
   },
   "require-dev": {
