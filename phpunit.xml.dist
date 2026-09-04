@@ -8,5 +8,8 @@
         <testsuite name="ConditionalChoices">
             <directory>tests/ConditionalChoices</directory>
         </testsuite>
+        <testsuite name="FieldTree">
+            <directory>tests/FieldTree</directory>
+        </testsuite>
     </testsuites>
 </phpunit>
