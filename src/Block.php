@@ -22,12 +22,44 @@ class Block
   protected bool $collapsible = true;
   public string $emptyFieldsMessage = '';
   protected bool $isRegistered = false;
+  protected bool $fieldGroupRegistered = false;
   protected bool $useUIFields = false;
+
+  /**
+   * When true, field groups are queued and registered together via
+   * flushDeferredFieldGroups() so InnerBlocks layouts see every block.
+   */
+  protected static bool $deferFieldGroups = false;
+
+  /** @var list<callable> */
+  protected static array $deferredFieldGroups = [];
 
   /**
    * @var callable|null $filterValueCallback
    */
   public $filterValueCallback;
+
+  /**
+   * Queue field-group registration until flushDeferredFieldGroups().
+   * Use around batch Block::register() calls so InnerBlocks can list all blocks.
+   */
+  public static function deferFieldGroupRegistration(): void
+  {
+    self::$deferFieldGroups = true;
+  }
+
+  /**
+   * Register any field groups queued while deferFieldGroupRegistration() was active.
+   */
+  public static function flushDeferredFieldGroups(): void
+  {
+    self::$deferFieldGroups = false;
+    $callbacks = self::$deferredFieldGroups;
+    self::$deferredFieldGroups = [];
+    foreach ($callbacks as $register) {
+      $register();
+    }
+  }
 
   public function __construct(string $blockJsonPath)
   {
@@ -185,14 +217,29 @@ class Block
       if (!$this->useUIFields) {
         // Extended ACF: register field groups on acf/include_fields (after macros on acf/init).
         // Build settings inside the callback so field objects (and macros) are resolved then.
+        //
+        // InnerBlocks builds its Flexible Content layouts from BlockRegistry at
+        // field-group registration time. If we register each field group
+        // immediately inside a batch of Block::register() calls, layouts only
+        // include blocks registered earlier in that loop (e.g. missing
+        // acf/wysiwyg). Defer when requested, or to priority 20 while
+        // acf/include_fields is running, so the full registry is available.
         $register = function () {
+          if ($this->fieldGroupRegistered) {
+            return;
+          }
           register_extended_field_group($this->getFieldGroupSettings());
+          $this->fieldGroupRegistered = true;
         };
 
-        if (did_action('acf/include_fields')) {
+        if (self::$deferFieldGroups) {
+          self::$deferredFieldGroups[] = $register;
+        } elseif (doing_action('acf/include_fields')) {
+          add_action('acf/include_fields', $register, 20);
+        } elseif (did_action('acf/include_fields')) {
           $register();
         } else {
-          add_action('acf/include_fields', $register);
+          add_action('acf/include_fields', $register, 20);
         }
       }
 
