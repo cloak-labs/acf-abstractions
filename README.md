@@ -8,7 +8,9 @@ This package is meant to be used alongside the wonderful [`vinkla/extended-acf`]
 - Register ACF Blocks with the `Block` class (all registered block instances become accessible via the `BlockRegistry` singleton)
 - Register ACF Options Pages with the `OptionsPage` class
 - **Conditional Choices** — a `conditionalChoices()` macro for Select/Radio/Checkbox/Button Group fields that show/hide individual choices based on another field’s live value (see [`docs/conditional-choices.md`](docs/conditional-choices.md))
+- **Query** — a reusable `Group` field for selecting/filtering posts and injecting the resolved results into a block’s REST payload (see [`docs/query-field-set.md`](docs/query-field-set.md))
 - Some useful, special fields that extend ACF's built-in field types:
+  - `Query` - An ACF `Group` (`query` by default) with automatic vs manual post selection, optional post-type / taxonomy / limit / ordering controls, and REST injection via `into()` / `mapUsing()` / `injectUsing()`. Place it like any other field; use unique names for multiple instances.
   - `InnerBlocks` - An auto-populated ACF `Flexible Content` field enabling you to select/arrange ACF blocks (assuming you register your ACF blocks via this package's `Block` class). Assigning `InnerBlocks` as a field of an ACF block enables nesting blocks within each other for powerful block composability. You can control which blocks are available for selection on a per-instance basis via the `includes` and `excludes` methods.
   - `HorizontalAlignment` - An auto-populated ACF `Button Group` field with options for `left`, `center`, `right`, and `justify` (displayed as icons). You can control which of those 4 options are available on a per-instance basis.
   - `VerticalAlignment` - An auto-populated ACF `Button Group` field with options for `top`, `center`, and `bottom` (displayed as icons). You can control which of those 3 options are available on a per-instance basis.

@@ -11,5 +11,8 @@
         <testsuite name="FieldTree">
             <directory>tests/FieldTree</directory>
         </testsuite>
+        <testsuite name="Query">
+            <directory>tests/Query</directory>
+        </testsuite>
     </testsuites>
 </phpunit>
