@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CloakWP\ACF\Fields;
 
 use CloakWP\ACF\Query\AllowedOrderBy;
+use CloakWP\ACF\Query\DefaultPostOrder;
 use CloakWP\ACF\Query\Definition;
 use CloakWP\ACF\Query\DefinitionRegistry;
 use CloakWP\ACF\Query\FieldSchema;
@@ -34,7 +35,7 @@ class Query extends Group
   private array $orderbyChoices = [];
 
   /** @var array<string, string> */
-  private array $defaultOrderby = ['date' => 'DESC'];
+  private array $defaultOrderby = DefaultPostOrder::ORDERBY;
 
   /** @var list<string> */
   private array $taxonomies = [];
@@ -149,10 +150,17 @@ class Query extends Group
 
     if ($default !== []) {
       $this->defaultOrderby = $this->normalizeOrderby($default);
-    } elseif ($this->defaultOrderby === ['date' => 'DESC']) {
-      $first = array_key_first($this->orderbyChoices);
-      if (is_string($first)) {
-        $this->defaultOrderby = [$first => 'DESC'];
+    } else {
+      $primary = array_key_first($this->defaultOrderby);
+      if ($primary === null || !isset($this->orderbyChoices[$primary])) {
+        $first = array_key_first($this->orderbyChoices);
+        if (is_string($first)) {
+          $this->defaultOrderby = $this->normalizeOrderby(
+            $first === 'rand'
+              ? ['rand' => 'DESC']
+              : [$first => $first === 'menu_order' ? 'ASC' : 'DESC', 'date' => 'DESC'],
+          );
+        }
       }
     }
 

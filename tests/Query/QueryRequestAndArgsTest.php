@@ -51,7 +51,7 @@ final class QueryRequestAndArgsTest extends QueryTestCase
     $args = (new QueryArgsBuilder())->compile($request);
 
     $this->assertSame(10, $request->postsPerPage);
-    $this->assertSame(['title' => 'ASC'], $args['orderby']);
+    $this->assertSame(['title' => 'ASC', 'date' => 'DESC'], $args['orderby']);
   }
 
   public function testEmptyLimitUsesMaxWhenUnlimitedIsDisabled(): void
@@ -165,5 +165,76 @@ final class QueryRequestAndArgsTest extends QueryTestCase
     ]);
 
     $this->assertSame(['date' => 'DESC'], $request->orderby);
+  }
+
+  public function testAutomaticQueriesDefaultToMenuOrderThenDate(): void
+  {
+    $definition = Query::make()->postType('team')->toDefinition();
+    $request = QueryRequest::from($definition, null);
+    $args = (new QueryArgsBuilder())->compile($request);
+
+    $this->assertSame(['menu_order' => 'ASC', 'date' => 'DESC'], $request->orderby);
+    $this->assertSame(['menu_order' => 'ASC', 'date' => 'DESC'], $args['orderby']);
+  }
+
+  public function testWithOrderingWithoutDefaultKeepsMenuOrderThenDate(): void
+  {
+    $definition = Query::make()
+      ->postType('team')
+      ->withOrdering(choices: ['menu_order', 'title', 'date'])
+      ->toDefinition();
+
+    $this->assertSame(['menu_order' => 'ASC', 'date' => 'DESC'], $definition->defaultOrderby);
+  }
+
+  public function testWithOrderingWithoutDefaultAddsDateTiebreakerToFirstChoice(): void
+  {
+    $definition = Query::make()
+      ->postType('post')
+      ->withOrdering(choices: ['title', 'date'])
+      ->toDefinition();
+
+    $this->assertSame(['title' => 'DESC', 'date' => 'DESC'], $definition->defaultOrderby);
+  }
+
+  public function testExplicitOrderByOverridesThePackageDefault(): void
+  {
+    $definition = Query::make()
+      ->postType('post')
+      ->orderBy(['date' => 'ASC'])
+      ->toDefinition();
+    $args = (new QueryArgsBuilder())->compile(QueryRequest::from($definition, null));
+
+    $this->assertSame(['date' => 'ASC'], $args['orderby']);
+  }
+
+  public function testEditorMenuOrderKeepsADateTiebreaker(): void
+  {
+    $definition = Query::make()
+      ->postType('team')
+      ->withOrdering(choices: ['menu_order', 'title', 'date'])
+      ->toDefinition();
+    $args = (new QueryArgsBuilder())->compile(QueryRequest::from($definition, [
+      'selection' => 'all',
+      'orderby' => 'menu_order',
+      'order' => 'ASC',
+    ]));
+
+    $this->assertSame(['menu_order' => 'ASC', 'date' => 'DESC'], $args['orderby']);
+  }
+
+  public function testEditorDateOrderingStaysDateOnly(): void
+  {
+    $definition = Query::make()
+      ->postType('post')
+      ->withOrdering(choices: ['menu_order', 'date'], default: ['date' => 'DESC'])
+      ->toDefinition();
+    $args = (new QueryArgsBuilder())->compile(QueryRequest::from($definition, [
+      'selection' => 'all',
+      'orderby' => 'date',
+      'order' => 'ASC',
+    ]));
+
+    $this->assertSame(['date' => 'ASC'], $args['orderby']);
   }
 }

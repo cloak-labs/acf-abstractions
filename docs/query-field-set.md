@@ -19,7 +19,7 @@ Block::make(__DIR__ . '/block.json')
       ->withLimit(max: 100, unlimited: true)
       ->withOrdering(
         choices: ['menu_order', 'title', 'date'],
-        default: ['menu_order' => 'ASC', 'title' => 'ASC'],
+        default: ['menu_order' => 'ASC', 'date' => 'DESC'],
       )
       ->into('events')
       ->mapUsing(fn ($event) => [
@@ -71,7 +71,7 @@ Query::make()
   ->unlimited()                 // posts_per_page = -1 when no limit is set
   ->withLimit(max: 24)          // editor field; empty uses max unless unlimited
   ->withTaxonomyFilters(['category', 'post_tag'])
-  ->orderBy(['date' => 'DESC']) // default order without showing the UI
+  ->orderBy(['menu_order' => 'ASC', 'date' => 'DESC']) // default order without showing the UI
   ->postStatus(['publish']);
 ```
 
@@ -97,6 +97,8 @@ Compiled `WP_Query` args always include:
 - `suppress_filters` → `false`
 - `no_found_rows` → `true`
 - `ignore_sticky_posts` → `true`
+- `orderby` → `menu_order ASC`, then `date DESC` (override with `orderBy()` / `withOrdering()`)
+- editor-selected `orderby` values other than `date` / `rand` keep a `date DESC` tie-breaker; `date`, `rand`, and manual `post__in` stay as chosen
 - editor limits clamped to `withLimit()` max
 - manual mode: `post__in` + `orderby => post__in` (empty selection returns `[]` without querying)
 - identical args reused for the rest of the request

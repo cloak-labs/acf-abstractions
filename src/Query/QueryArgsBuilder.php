@@ -40,6 +40,8 @@ final class QueryArgsBuilder
       $args['orderby'] = 'rand';
     } elseif ($request->orderby !== []) {
       $args['orderby'] = $request->orderby;
+    } else {
+      $args['orderby'] = DefaultPostOrder::ORDERBY;
     }
 
     if ($request->taxQuery !== []) {

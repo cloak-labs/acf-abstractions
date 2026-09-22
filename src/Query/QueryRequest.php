@@ -121,11 +121,11 @@ final class QueryRequest
       }
 
       if ($key !== null && $allowed) {
-        return ['query', [$key => $order]];
+        return ['query', DefaultPostOrder::withDateTiebreaker([$key => $order])];
       }
     }
 
-    $default = $definition->defaultOrderby !== [] ? $definition->defaultOrderby : ['date' => 'DESC'];
+    $default = $definition->defaultOrderby !== [] ? $definition->defaultOrderby : DefaultPostOrder::ORDERBY;
     if (isset($default['rand'])) {
       return ['rand', []];
     }
