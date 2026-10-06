@@ -72,15 +72,15 @@ class InnerBlocks extends FlexibleContent
 
                 return array_map(function ($field) use ($filterExcludedFields) {
                     $property = (new \ReflectionClass($field))->getProperty('settings');
-                    $property->setAccessible(true);
                     $settings = $field->settings;
 
                     if (isset($settings['sub_fields'])) {
                         $settings['sub_fields'] = $filterExcludedFields($settings['sub_fields']);
                     }
 
-                    // Clone the field before modifying its settings to avoid mutating the original field object (fixes bug where only one InnerBlocks field can exist)
-                    $newField = $field->cloneRecursively();
+                    // Nested fields have already been filtered and cloned above.
+                    // Cloning that tree again would immediately discard the copies.
+                    $newField = clone $field;
                     $property->setValue($newField, $settings);
                     return $newField;
                 }, $filteredFields);
@@ -117,12 +117,23 @@ class InnerBlocks extends FlexibleContent
     /** @internal */
     public function toArray(string|null $parentKey = null): array
     {
-        $this->settings['layouts'] = $this->createLayoutsFromBlocks($parentKey); // we copied toArray() from the base Field class just to add this
-
-        $result = parent::toArray($parentKey);
+        // The exported arrays are retained by ACF. Release the temporary builder
+        // tree instead of keeping a second copy of every nested block's fields.
+        $hadLayouts = array_key_exists('layouts', $this->settings);
+        $previousLayouts = $this->settings['layouts'] ?? null;
+        $this->settings['layouts'] = $this->createLayoutsFromBlocks($parentKey);
+        try {
+            $result = parent::toArray($parentKey);
+        } finally {
+            if ($hadLayouts) {
+                $this->settings['layouts'] = $previousLayouts;
+            } else {
+                unset($this->settings['layouts']);
+            }
+        }
 
         // Adjust the ACF formatting of InnerBlocks field values to mimic the standard Block data format: 
-        add_filter("acf/format_value/key={$result['key']}", function ($value, $post_id, $field) {
+        add_filter("acf/format_value/key={$result['key']}", static function ($value, $post_id, $field) {
             $formattedInnerBlocksValue = [];
             if (empty($value) || !is_array($value)) return $value;
 
