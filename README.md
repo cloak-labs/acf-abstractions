@@ -28,3 +28,7 @@ composer require cloakwp/acf-abstractions
 ## Usage
 
 Docs coming soon -- for now, see the source code of this package's `src` directory; it's mostly self-documenting.
+
+
+See [InnerBlocks layout loading](docs/inner-blocks.md) for deferred definitions,
+value-aware parsing, and integration escape hatches.

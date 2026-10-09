@@ -1,129 +1,133 @@
 <?php
 
+declare(strict_types=1);
+
 namespace CloakWP\ACF\Fields;
 
 use CloakWP\ACF\BlockRegistry;
-use Extended\ACF\Fields\{Accordion, FlexibleContent, Layout, Text};
+use Extended\ACF\Fields\{Accordion, Field, FlexibleContent, Layout, Text};
 
-/**
- * An ACF field that allows you to nest ACF blocks (that are registered as CloakWP\ACF\Block instances) within eachother. It's an abstraction around ACF's Flexible Content field.
- */
+/** Flexible-content layouts built from the current site's block catalog. */
 class InnerBlocks extends FlexibleContent
 {
+    /** @var array<int, array<string, callable|null>> */
+    private static array $pendingLayouts = [];
+    /** @var array<int, array<string, true>> */
+    private static array $buildingLayouts = [];
+    private static bool $layoutLoaderRegistered = false;
+    private bool $lazyLayouts = true;
     private array $includes = [];
     private array $excludes = [];
     public bool $excludeFromInnerBlocks = true;
 
-    public static function make(string $label, string|null $name = null): static
+    public static function make(string $label, ?string $name = null): static
     {
-        $self = new static($label, $name);
-        $self->button('Add block');
-        return $self;
+        return (new static($label, $name))->button('Add block');
     }
 
-
-    public function include(array $includedBlocks): self
+    public function include(array $includedBlocks): static
     {
         $this->includes = $includedBlocks;
         return $this;
     }
 
-    public function exclude(array $excludedBlocks): self
+    public function exclude(array $excludedBlocks): static
     {
         $this->excludes = $excludedBlocks;
         return $this;
     }
 
-    private function createLayoutsFromBlocks($parentKey): array
+    public function lazyLayouts(bool $lazy = true): static
     {
-        $blocks = BlockRegistry::getInstance()->getBlocks();
-        $final_layouts = [];
-
-        if (!empty($blocks)) {
-            // define field filtering function to exclude certain incompatible fields from being nested in an InnerBlock/layout:
-            $filterExcludedFields = function ($fields) use (&$filterExcludedFields) {
-                $count = -1;
-                // Create a new array of filtered fields instead of modifying the original
-                $filteredFields = array_filter($fields, function ($field) use (&$count, $fields) {
-                    $count++;
-
-                    if (!$field || !is_object($field)) {
-                        return false;
-                    }
-
-                    if (isset($field->excludeFromInnerBlocks) && $field->excludeFromInnerBlocks === true) {
-                        // `excludeFromInnerBlocks` is a static property that can be set on custom fields to exclude them from InnerBlocks -- the InnerBlocks field itself uses this to prevent infinite recursion; TODO: allow InnerBlocks within InnerBlocks but limit nested recursion to a specified depth to prevent infinite loop.
-                        return false;
-                    }
-
-                    try {
-                        $fieldClass = get_class($field);
-                    } catch (\Exception $e) {
-                        return false;
-                    }
-
-                    // Exclude top-level wrapping Accordion fields because the ACF Flexible Content field UI already wraps layouts in accordion:
-                    if (($count == 0 || $count == count($fields) - 1) && $fieldClass == Accordion::class) {
-                        return false;
-                    }
-
-                    return true;
-                });
-
-                return array_map(function ($field) use ($filterExcludedFields) {
-                    $property = (new \ReflectionClass($field))->getProperty('settings');
-                    $settings = $field->settings;
-
-                    if (isset($settings['sub_fields'])) {
-                        $settings['sub_fields'] = $filterExcludedFields($settings['sub_fields']);
-                    }
-
-                    // Nested fields have already been filtered and cloned above.
-                    // Cloning that tree again would immediately discard the copies.
-                    $newField = clone $field;
-                    $property->setValue($newField, $settings);
-                    return $newField;
-                }, $filteredFields);
-            };
-
-            foreach ($blocks as $innerBlock) {
-                $settings = $innerBlock->getFieldGroupSettings();
-                $included = empty($this->includes) || in_array($settings['name'], $this->includes);
-
-                $is_inner_block_same_as_parent_block = $parentKey == $settings['key'] || str_starts_with($parentKey, $settings['key']); // we don't allow nesting a block within itself (infinite recursion)
-                $excluded = in_array($settings['name'], $this->excludes) || $is_inner_block_same_as_parent_block;
-
-                // filter inner blocks based on whether they've been included or excluded
-                if ($included && !$excluded) {
-                    $ogFields = $settings['fields'];
-
-                    if (is_array($ogFields)) {
-                        $newFields = $filterExcludedFields($ogFields);
-                    }
-
-                    $fields = $newFields ?? $ogFields;
-
-                    // Make a Flexible Content "layout" using each block's fields
-                    $final_layouts[] = Layout::make($settings['title'], $settings['name'])
-                        ->layout('block')
-                        ->fields([...$fields, Text::make('CSS Class(es)', 'className')]);
-                }
-            }
-        }
-
-        return $final_layouts;
+        $this->lazyLayouts = $lazy;
+        return $this;
     }
 
-    /** @internal */
-    public function toArray(string|null $parentKey = null): array
+    private static function registerLayoutLoader(): void
     {
-        // The exported arrays are retained by ACF. Release the temporary builder
-        // tree instead of keeping a second copy of every nested block's fields.
+        if (self::$layoutLoaderRegistered) {
+            return;
+        }
+        self::$layoutLoaderRegistered = true;
+        add_filter('cloakwp/block_parser/value_aware_fields', '__return_true', 0);
+        add_filter('acf/load_field/type=flexible_content', [self::class, 'loadLayouts'], 5);
+    }
+
+    /** @internal Expand before ACF resolves the flexible-content children. */
+    public static function loadLayouts(array $field): array
+    {
+        $site = get_current_blog_id();
+        $key = $field['key'];
+        if (!array_key_exists($key, self::$pendingLayouts[$site] ?? [])) {
+            return $field;
+        }
+        if (!apply_filters('cloakwp/acf/inner_blocks/load_layouts', true, $field)) {
+            $field['layouts'] = [];
+            return $field;
+        }
+        $required = apply_filters('cloakwp/acf/inner_blocks/required_layouts', null, $field);
+        $build = self::$pendingLayouts[$site][$key];
+        if ($build === null || isset(self::$buildingLayouts[$site][$key])) {
+            $field['layouts'] = self::selectLayouts($field['layouts'], $required);
+            return $field;
+        }
+        self::$buildingLayouts[$site][$key] = true;
+        try {
+            $layouts = $build($required)['layouts'];
+            $local = acf_get_local_field($key);
+            $existing = array_column($local['layouts'] ?? [], null, 'name');
+            $import = array_column($layouts, null, 'name');
+            if ($required === null || array_diff_key($import, $existing) !== []) {
+                // Keep earlier imports available for another occurrence in this request.
+                $local['layouts'] = $required === null ? $layouts : array_values($existing + $import);
+                acf_add_local_field($local);
+            }
+            $field['layouts'] = self::selectLayouts(acf_get_local_field($key)['layouts'], $required);
+            // Partial views must leave the builder available for other layouts and
+            // ordinary ACF reads. Failed exports remain available for retry too.
+            if ($required === null) {
+                self::$pendingLayouts[$site][$key] = null;
+            }
+        } finally {
+            unset(self::$buildingLayouts[$site][$key]);
+        }
+        return $field;
+    }
+
+    /** @param list<string>|null $required */
+    private static function selectLayouts(array $layouts, ?array $required): array
+    {
+        return $required === null ? $layouts : array_values(array_filter($layouts,
+            static fn(array $layout): bool => in_array($layout['name'], $required, true)));
+    }
+
+    /** Return eligible layout builders without exporting or importing fields. */
+    public function getLayouts(?string $parentKey): array
+    {
+        $layouts = [];
+        foreach (BlockRegistry::getInstance()->getBlocks() as $block) {
+            $settings = $block->getFieldGroupSettings();
+            $name = $settings['name'];
+            if (($this->includes !== [] && !in_array($name, $this->includes, true))
+                || in_array($name, $this->excludes, true)
+                || str_starts_with($parentKey ?? '', $settings['key'])
+            ) {
+                continue;
+            }
+            $layouts[] = Layout::make($settings['title'], $name)
+                ->layout('block')
+                ->fields([...self::filterNestedFields($settings['fields']), Text::make('CSS Class(es)', 'className')]);
+        }
+        return $layouts;
+    }
+
+    private function exportLayouts(?string $parentKey, array $layouts): array
+    {
         $hadLayouts = array_key_exists('layouts', $this->settings);
         $previousLayouts = $this->settings['layouts'] ?? null;
-        $this->settings['layouts'] = $this->createLayoutsFromBlocks($parentKey);
+        $this->settings['layouts'] = $layouts;
         try {
-            $result = parent::toArray($parentKey);
+            return parent::toArray($parentKey);
         } finally {
             if ($hadLayouts) {
                 $this->settings['layouts'] = $previousLayouts;
@@ -131,55 +135,92 @@ class InnerBlocks extends FlexibleContent
                 unset($this->settings['layouts']);
             }
         }
+    }
 
-        // Adjust the ACF formatting of InnerBlocks field values to mimic the standard Block data format: 
-        add_filter("acf/format_value/key={$result['key']}", static function ($value, $post_id, $field) {
-            $formattedInnerBlocksValue = [];
-            if (empty($value) || !is_array($value)) return $value;
+    /** @internal */
+    public function toArray(?string $parentKey = null): array
+    {
+        $localFields = function_exists('acf_add_local_field');
+        $lazy = $this->lazyLayouts && $localFields;
+        $result = $this->exportLayouts($parentKey, $lazy ? [] : $this->getLayouts($parentKey));
+        $result['cloakwp_inner_blocks'] = true;
+        $result['cloakwp_lazy_layouts'] = $lazy;
+        if ($lazy) {
+            $builder = clone $this;
+            self::$pendingLayouts[get_current_blog_id()][$result['key']] = static function (?array $required = null) use ($builder, $parentKey): array {
+                // Keep partially exported children on retry: Extended ACF records
+                // generated keys on each builder as it exports them.
+                static $layouts = null;
+                $layouts ??= $builder->getLayouts($parentKey);
+                $selected = $required === null ? $layouts : array_filter($layouts,
+                    static fn(Layout $layout): bool => in_array($layout->settings['name'], $required, true));
+                return $builder->exportLayouts($parentKey, array_values($selected));
+            };
+            self::registerLayoutLoader();
+        } elseif ($localFields) {
+            unset(self::$pendingLayouts[get_current_blog_id()][$result['key']]);
+        }
+        // WordPress deduplicates this named callback on repeated exports.
+        add_filter("acf/format_value/key={$result['key']}", [self::class, 'formatValue'], 10, 3);
+        return $result;
+    }
 
-            // Determine the actual post ID that contains this InnerBlocks field
-            $actualPostId = null;
+    /** @internal Format rows as the parser's ordinary structured blocks. */
+    public static function formatValue($value, $postId, $field)
+    {
+        if (!is_array($value) || $value === []) {
+            return $value;
+        }
+        $actualPostId = self::resolvePostId($postId);
+        $blocks = [];
+        foreach ($value as $layout) {
+            $name = $layout['acf_fc_layout'];
+            unset($layout['acf_fc_layout']);
+            $blocks[] = apply_filters('cloakwp/block', [
+                'name' => $name, 'type' => 'acf', 'attrs' => [], 'data' => $layout,
+            ], ['name' => $name, 'type' => 'acf'], $actualPostId);
+        }
+        return $blocks;
+    }
 
-            // Check if $post_id is actually a post ID or a block ID
-            if ($post_id) {
-                $post = get_post($post_id);
-                if ($post && $post->post_type !== 'wp_block') {
-                    // This is a valid post ID
-                    $actualPostId = $post_id;
-                } else {
-                    // This is likely a block ID, try to get the parent post
-                    $actualPostId = get_the_ID();
-
-                    // If that doesn't work, try to get from global query
-                    if (!$actualPostId && is_object($GLOBALS['wp_query'])) {
-                        $actualPostId = $GLOBALS['wp_query']->get_queried_object_id();
-                    }
+    private static function resolvePostId($postId)
+    {
+        $actualPostId = null;
+        if ($postId) {
+            $post = get_post($postId);
+            if ($post && $post->post_type !== 'wp_block') {
+                $actualPostId = $postId;
+            } else {
+                $actualPostId = get_the_ID();
+                if (!$actualPostId && is_object($GLOBALS['wp_query'] ?? null)) {
+                    $actualPostId = $GLOBALS['wp_query']->get_queried_object_id();
                 }
             }
+        }
+        return $actualPostId ?: ($GLOBALS['post']->ID ?? null);
+    }
 
-            // Fallback to global post if still no valid post ID
-            if (!$actualPostId && isset($GLOBALS['post'])) {
-                $actualPostId = $GLOBALS['post']->ID;
+    /** Clone compatible children without changing the source builders. */
+    private static function filterNestedFields(array $fields): array
+    {
+        $filtered = [];
+        $position = 0;
+        foreach ($fields as $index => $field) {
+            $isWrapper = $position === 0 || $position === count($fields) - 1;
+            $position++;
+            if (!$field instanceof Field || ($field->excludeFromInnerBlocks ?? false)
+                || ($isWrapper && get_class($field) === Accordion::class)
+            ) {
+                continue;
             }
-
-            foreach ($value as $layout) {
-                $name = $layout['acf_fc_layout'];
-                unset($layout['acf_fc_layout']);
-
-                $defaultBlock = [
-                    'name' => $name,
-                    'type' => 'acf',
-                    'attrs' => [],
-                    'data' => $layout
-                ];
-
-                $formattedBlock = apply_filters('cloakwp/block', $defaultBlock, ['name' => $name, 'type' => 'acf'], $actualPostId);
-                $formattedInnerBlocksValue[] = $formattedBlock;
+            $copy = clone $field;
+            foreach (['sub_fields', 'layouts'] as $children) {
+                if (isset($copy->settings[$children])) {
+                    $copy->settings[$children] = self::filterNestedFields($copy->settings[$children]);
+                }
             }
-
-            return $formattedInnerBlocksValue;
-        }, 10, 3);
-
-        return $result;
+            $filtered[$index] = $copy;
+        }
+        return $filtered;
     }
 }

@@ -6,7 +6,7 @@ namespace CloakWP\ACF\Tests\FieldTree;
 
 use CloakWP\ACF\{Block, BlockRegistry};
 use CloakWP\ACF\Fields\InnerBlocks;
-use Extended\ACF\Fields\{Accordion, Group, Layout, Text};
+use Extended\ACF\Fields\{Accordion, FlexibleContent, Group, Layout, Text};
 use PHPUnit\Framework\TestCase;
 
 final class InnerBlocksTest extends TestCase
@@ -52,6 +52,22 @@ final class InnerBlocksTest extends TestCase
         self::assertArrayNotHasKey('key', $text->settings);
         $direct = $nested->toArray('group_direct');
         self::assertSame(['title', 'children'], array_column($direct['sub_fields'], 'name'));
+    }
+
+    public function testNestedFilteringPreservesMenuOrderAndOrdinaryLayoutChildren(): void
+    {
+        $group = Group::make('Content', 'content')->fields([
+            InnerBlocks::make('Excluded', 'excluded'), Text::make('Title', 'title'),
+        ]);
+        $sections = FlexibleContent::make('Sections', 'sections')->layouts([
+            Layout::make('Section', 'section')->fields([$group]),
+        ]);
+        $this->registerBlock([$sections]);
+        $export = InnerBlocks::make('Nested', 'nested')->toArray('group_nested_order');
+        $children = $export['layouts'][0]['sub_fields'][0]['layouts'][0]['sub_fields'][0]['sub_fields'];
+        self::assertSame(['title'], array_column($children, 'name'));
+        self::assertSame([1], array_keys($children));
+        self::assertCount(2, $group->settings['sub_fields']);
     }
 
     public function testExplicitLayoutsRemainAvailableAfterAnInnerBlocksExport(): void
