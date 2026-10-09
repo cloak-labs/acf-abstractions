@@ -72,3 +72,23 @@ repeated loading, nested values, rendered controls, and eager exports.
 The parser's `tests/Integration/ValueAwareFieldsWordPress.php` additionally checks
 empty groups, mixed repeater rows, omitted Query defaults, cache isolation, and
 ordinary ACF reads after parsing.
+
+## Separate schema import from block registration
+
+`Block::register()` registers WordPress block metadata, the site's catalog entry,
+value callbacks. Its schema import can be skipped
+through `cloakwp/acf/block/register_field_group` (`bool $register, Block $block`),
+which defaults to true. Use `Block::registerFieldGroup()` to import a skipped
+schema later; repeated calls on the same instance are ignored, as are UI-managed
+fields. Register a complete eligible catalog before loading InnerBlocks.
+
+`BlockFieldIndex` locates a native post-object, relationship, taxonomy, or user
+selector among block builders without exporting them. `find($key, $type)` returns
+its owning block and the lazy ancestor keys to load, or null for missing or
+ambiguous matches. Custom key/export behavior requires validation against the
+imported ACF field and a full-registration fallback. Catalog entries are keyed
+by block name within each multisite blog.
+
+`tests/Integration/TargetedBlockFieldsWordPress.php` verifies metadata and callback
+retention, nested selector import, idempotent schema import, callback deduplication,
+retry after a partial export, and multisite catalog isolation without saving posts.

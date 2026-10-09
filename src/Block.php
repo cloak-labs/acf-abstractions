@@ -94,6 +94,7 @@ class Block
 
   public function fields(array $fields): static
   {
+    $this->fieldGroupSettings = [];
     // Process fields to handle nested arrays
     $flattenedFields = [];
     foreach ($fields as $field) {
@@ -165,6 +166,7 @@ class Block
   public function collapsible(bool $shouldCollapse): static
   {
     $this->collapsible = $shouldCollapse;
+    $this->fieldGroupSettings = [];
 
     return $this;
   }
@@ -176,6 +178,7 @@ class Block
   public function emptyFieldsMessage(string $message): static
   {
     $this->emptyFieldsMessage = $message;
+    $this->fieldGroupSettings = [];
 
     return $this;
   }
@@ -214,23 +217,9 @@ class Block
       BlockRegistry::getInstance()->addBlock($block);
 
       // Only register field group if not using UI fields
-      if (!$this->useUIFields) {
-        // Extended ACF: register field groups on acf/include_fields (after macros on acf/init).
-        // Build settings inside the callback so field objects (and macros) are resolved then.
-        //
-        // InnerBlocks builds its Flexible Content layouts from BlockRegistry at
-        // field-group registration time. If we register each field group
-        // immediately inside a batch of Block::register() calls, layouts only
-        // include blocks registered earlier in that loop (e.g. missing
-        // acf/wysiwyg). Defer when requested, or to priority 20 while
-        // acf/include_fields is running, so the full registry is available.
-        $register = function () {
-          if ($this->fieldGroupRegistered) {
-            return;
-          }
-          register_extended_field_group($this->getFieldGroupSettings());
-          $this->fieldGroupRegistered = true;
-        };
+      if (apply_filters('cloakwp/acf/block/register_field_group', true, $this)) {
+        // Import after ACF macros are available and the batch catalog is complete.
+        $register = [$this, 'registerFieldGroup'];
 
         if (self::$deferFieldGroups) {
           self::$deferredFieldGroups[] = $register;
@@ -249,7 +238,18 @@ class Block
       }
 
       $this->isRegistered = true;
+
     }
+  }
+
+  /** Import this block's schema independently of its WordPress registration. */
+  public function registerFieldGroup(): void
+  {
+    if ($this->useUIFields || $this->fieldGroupRegistered) {
+      return;
+    }
+    register_extended_field_group($this->getFieldGroupSettings());
+    $this->fieldGroupRegistered = true;
   }
 
   private function getCollapsibleFields(string $accordionLabel): array

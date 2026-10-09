@@ -10,7 +10,7 @@ class BlockRegistry
   /** Stores the BlockRegistry Singleton instance. */
   private static $instance;
 
-  /** Stores all CloakWP\ACF\Block instances. */
+  /** @var array<int, array<string, Block>> Catalogs are isolated by multisite blog. */
   protected array $blocks = [];
 
   private function __construct() {}
@@ -26,7 +26,8 @@ class BlockRegistry
 
   public function addBlock(Block $block): static
   {
-    $this->blocks[] = $block;
+    $name = $block->parsedBlockJson['name'] ?? $block->getFieldGroupSettings()['name'];
+    $this->blocks[$this->siteId()][$name] = $block;
 
     return $this;
   }
@@ -38,6 +39,16 @@ class BlockRegistry
    */
   public function getBlocks(): array
   {
-    return $this->blocks;
+    return array_values($this->blocks[$this->siteId()] ?? []);
+  }
+
+  public function getBlock(string $name): ?Block
+  {
+    return $this->blocks[$this->siteId()][$name] ?? null;
+  }
+
+  private function siteId(): int
+  {
+    return function_exists('get_current_blog_id') ? (int) get_current_blog_id() : 1;
   }
 }
