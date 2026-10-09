@@ -92,3 +92,29 @@ by block name within each multisite blog.
 `tests/Integration/TargetedBlockFieldsWordPress.php` verifies metadata and callback
 retention, nested selector import, idempotent schema import, callback deduplication,
 retry after a partial export, and multisite catalog isolation without saving posts.
+
+## Editor templates
+
+InnerBlocks renders saved rows immediately and keeps every eligible child in the
+Add block menu. Hidden clone controls load through authenticated AJAX the first
+time a layout is added, then remain available for subsequent additions within
+that field instance. ACF handles row initialization, duplication, sorting, and
+serialization. Failed requests leave the form intact and can be retried.
+
+This requires ACF Pro's native context permission helper (ACF 6.7.2+) and flexible
+content layout renderer. Earlier versions, public forms, and edit contexts the
+current user cannot access retain eager controls. Requests verify
+the field nonce, edit permission for the current object, and the selected layout.
+Field definitions remain available for ACF's block editor integrations. There is
+no persistent template cache.
+
+Use `InnerBlocks::make('Blocks')->lazyTemplates(false)` for integrations that
+inspect all clone controls upfront or require `field.add()` to return a row
+synchronously on its first addition. The
+`cloakwp/acf/inner_blocks/lazy_templates` filter can also disable this per field.
+`lazyLayouts(false)` controls PHP definition construction independently.
+
+Run `node --test tests/JavaScript/inner-blocks-layouts.test.cjs` for the loading
+lifecycle checks, and run `tests/Integration/LayoutTemplatesWordPress.php`
+through `wp eval-file --use-include --url=<site>` with ACF Pro active for native
+rendering and value compatibility checks.

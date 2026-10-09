@@ -31,4 +31,4 @@ Docs coming soon -- for now, see the source code of this package's `src` directo
 
 
 See [InnerBlocks layout loading](docs/inner-blocks.md) for deferred definitions,
-value-aware parsing, and integration escape hatches.
+value-aware parsing, editor templates, and integration escape hatches.

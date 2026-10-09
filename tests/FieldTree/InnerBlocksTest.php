@@ -6,6 +6,7 @@ namespace CloakWP\ACF\Tests\FieldTree;
 
 use CloakWP\ACF\{Block, BlockRegistry};
 use CloakWP\ACF\Fields\InnerBlocks;
+use CloakWP\ACF\InnerBlocks\LayoutTemplates;
 use Extended\ACF\Fields\{Accordion, FlexibleContent, Group, Layout, Text};
 use PHPUnit\Framework\TestCase;
 
@@ -30,6 +31,18 @@ final class InnerBlocksTest extends TestCase
                 return ['name' => $this->testName, 'key' => 'group_example', 'title' => 'Example', 'fields' => $this->testFields];
             }
         });
+    }
+
+    public function testTemplateLoadingCanBeDisabledIndependentlyOfLayoutConstruction(): void
+    {
+        $this->registerBlock([Text::make('Title', 'title')]);
+        $field = InnerBlocks::make('Blocks', 'blocks')->lazyLayouts(false);
+        $export = $field->toArray('group_templates');
+        self::assertTrue($export['cloakwp_inner_blocks']);
+        self::assertTrue($export['cloakwp_lazy_templates']);
+        self::assertFalse(LayoutTemplates::enabled($export), 'Unsupported ACF must keep eager controls');
+        self::assertCount(1, $export['layouts']);
+        self::assertFalse($field->lazyTemplates(false)->toArray('group_templates_eager')['cloakwp_lazy_templates']);
     }
 
     public function testNestedExportsKeepSourceFieldsReusableAndExcludeIncompatibleFields(): void

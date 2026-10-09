@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace CloakWP\ACF\Fields;
 
 use CloakWP\ACF\BlockRegistry;
+use CloakWP\ACF\InnerBlocks\LayoutTemplates;
 use Extended\ACF\Fields\{Accordion, Field, FlexibleContent, Layout, Text};
 
 /** Flexible-content layouts built from the current site's block catalog. */
@@ -16,6 +17,7 @@ class InnerBlocks extends FlexibleContent
     private static array $buildingLayouts = [];
     private static bool $layoutLoaderRegistered = false;
     private bool $lazyLayouts = true;
+    private bool $lazyTemplates = true;
     private array $includes = [];
     private array $excludes = [];
     public bool $excludeFromInnerBlocks = true;
@@ -40,6 +42,13 @@ class InnerBlocks extends FlexibleContent
     public function lazyLayouts(bool $lazy = true): static
     {
         $this->lazyLayouts = $lazy;
+        return $this;
+    }
+
+    /** Keep native eager clone controls for integrations that need them. */
+    public function lazyTemplates(bool $lazy = true): static
+    {
+        $this->lazyTemplates = $lazy;
         return $this;
     }
 
@@ -145,6 +154,10 @@ class InnerBlocks extends FlexibleContent
         $result = $this->exportLayouts($parentKey, $lazy ? [] : $this->getLayouts($parentKey));
         $result['cloakwp_inner_blocks'] = true;
         $result['cloakwp_lazy_layouts'] = $lazy;
+        $result['cloakwp_lazy_templates'] = $this->lazyTemplates;
+        if ($localFields) {
+            LayoutTemplates::boot();
+        }
         if ($lazy) {
             $builder = clone $this;
             self::$pendingLayouts[get_current_blog_id()][$result['key']] = static function (?array $required = null) use ($builder, $parentKey): array {

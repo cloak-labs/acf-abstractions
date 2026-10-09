@@ -34,6 +34,7 @@ if (!defined('WPINC')) {
 
 \CloakWP\ACF\ConditionalChoices\Bootstrap::boot();
 \CloakWP\ACF\Query\Bootstrap::boot();
+\CloakWP\ACF\InnerBlocks\LayoutTemplates::boot();
 
 add_filter('acf/get_field_label', function (string $label, array $field, string $context): string {
   if ($context === 'admin' || $label === '') {
