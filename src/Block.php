@@ -39,6 +39,16 @@ class Block
    */
   public $filterValueCallback;
 
+  /** @var list<callable> */
+  protected array $registrationCallbacks = [];
+
+  /** Run integrations only when this block is actually registered. */
+  public function onRegister(callable $callback): static
+  {
+    $this->registrationCallbacks[] = $callback;
+    return $this;
+  }
+
   /**
    * Queue field-group registration until flushDeferredFieldGroups().
    * Use around batch Block::register() calls so InnerBlocks can list all blocks.
@@ -239,6 +249,9 @@ class Block
 
       $this->isRegistered = true;
 
+      foreach ($this->registrationCallbacks as $callback) {
+        $callback($this);
+      }
     }
   }
 

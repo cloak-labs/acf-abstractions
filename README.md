@@ -29,6 +29,21 @@ composer require cloakwp/acf-abstractions
 
 Docs coming soon -- for now, see the source code of this package's `src` directory; it's mostly self-documenting.
 
+## Block registration integrations
+
+Use `onRegister()` to attach an integration when a block is registered. The
+callback receives the registered block, so it can read the name from its metadata
+without duplicating the name in another feature. Each callback runs once per
+block instance, after its value filter and field-group registration are wired.
+
+```php
+Block::make(__DIR__ . '/block.json')
+  ->onRegister(function (Block $block): void {
+    MyIntegration::register($block);
+  })
+  ->register();
+```
+
 
 See [InnerBlocks layout loading](docs/inner-blocks.md) for deferred definitions,
 value-aware parsing, editor templates, and integration escape hatches.
