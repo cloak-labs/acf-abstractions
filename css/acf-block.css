@@ -255,45 +255,6 @@
         }
       }
 
-      &.acf-field-button-group {
-        /* Change hard-coded blue colors to use WP color variables (ensures it matches selected theme) */
-        .acf-input {
-          label {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            padding: 5px 9px;
-
-            svg {
-              width: 20px;
-              height: auto;
-              display: block;
-              padding: 2px;
-            }
-
-            /* Style the selected state */
-            &.selected svg rect {
-              fill: currentColor;
-            }
-
-            &:hover {
-              color: var(--cloakwp-acf-ui-accent-color);
-              border-color: var(--cloakwp-acf-ui-accent-color);
-            }
-
-            &.selected {
-              border-color: var(--cloakwp-acf-ui-accent-color);
-              background-color: var(--cloakwp-acf-ui-accent-color);
-
-              &:hover {
-                color: white;
-              }
-            }
-          }
-        }
-      }
-
       /* Radio or checkbox fields */
       &.acf-field-radio,
       &.acf-field-checkbox {
@@ -441,6 +402,46 @@
     /* Hide ACF Tab endpoints */
     .acf-tab-wrap:nth-child(even) {
       display: none;
+    }
+  }
+}
+
+/* ACF's expanded editor is a body-level portal outside .block-editor. Share
+   button-group icon sizing and states without applying sidebar-only layouts. */
+.block-editor .acf-fields > .acf-field.acf-field-button-group,
+.acf-block-form-modal .acf-fields > .acf-field.acf-field-button-group {
+  .acf-input {
+    label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 5px 9px;
+
+      svg {
+        width: 20px;
+        height: auto;
+        display: block;
+        padding: 2px;
+      }
+
+      &.selected svg rect {
+        fill: currentColor;
+      }
+
+      &:hover {
+        color: var(--cloakwp-acf-ui-accent-color);
+        border-color: var(--cloakwp-acf-ui-accent-color);
+      }
+
+      &.selected {
+        border-color: var(--cloakwp-acf-ui-accent-color);
+        background-color: var(--cloakwp-acf-ui-accent-color);
+
+        &:hover {
+          color: white;
+        }
+      }
     }
   }
 }

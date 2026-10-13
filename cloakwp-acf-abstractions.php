@@ -64,7 +64,7 @@ Stylesheet::make("cloakwp_acf_general_styles")
 Stylesheet::make("cloakwp_acf_block_styles")
   ->hooks(["enqueue_block_editor_assets"])
   ->src(plugin_dir_url(__FILE__) . '/css/acf-block.css')
-  ->version(\WP_ENV === "development" ? filemtime(plugin_dir_path(__FILE__) . '/css/acf-block.css') : '0.0.1')
+  ->version(\WP_ENV === "development" ? filemtime(plugin_dir_path(__FILE__) . '/css/acf-block.css') : '0.0.2')
   ->enqueue();
 
 Stylesheet::make("cloakwp_acf_tooltip_styles")
